@@ -1,0 +1,114 @@
+spring:
+  redis:
+    database: 1
+    host: 127.0.0.1
+    port: 6379
+    password: pcserver123.
+    jedis:
+      pool:
+        max-active: 8
+        max-wait: -1ms
+        max-idle: 8
+        min-idle: 0
+    timeout: 3000
+  thymeleaf:
+    cache: true
+    prefix: classpath:/templates/
+  jmx:
+    default-domain: com.hlyf.domin
+cluster:
+  isredis: true                      #是否开启redis缓存过滤请求
+  isredistime: 7200                   #有效时间  单位s秒
+  encrypt: true                      #是否启动加密   默认是
+  datasource:                       #jdbc:sqlserver://39.96.28.239:13579;databaseName=Posmanagement_main   民生地址
+    driver-class-name: com.microsoft.sqlserver.jdbc.SQLServerDriver
+    url: jdbc:sqlserver://47.104.246.36:2468;databaseName=Posmanagement_main  #jdbc:sqlserver://47.104.246.36:2468;databaseName=Posmanagement_main  华隆的
+    username: sa
+    password: pcserver123.
+  #连接池的配置信息
+  druid:
+    initialSize: 5   # 初始化大小，最小，最大
+    minIdle: 5
+    maxActive: 40
+    maxWait: 60000    # 配置获取连接等待超时的时间
+    timeBetweenEvictionRunsMillis: 60000  # 配置间隔多久才进行一次检测，检测需要关闭的空闲连接，单位是毫秒
+    minEvictableIdleTimeMillis: 300000    # 配置一个连接在池中最小生存的时间，单位是毫秒
+    validationQuery: SELECT 1
+    testWhileIdle: true
+    testOnBorrow: false
+    testOnReturn: false
+    poolPreparedStatements: true
+    maxPoolPreparedStatementPerConnectionSize: 20
+    filters: stat,wall,log4j
+    connectionProperties: druid.stat.mergeSql=true;druid.stat.slowSqlMillis=5000
+
+master:
+  datasource:                       #jdbc:sqlserver://39.96.28.239:13579;databaseName=Posmanagement_main   民生地址
+    driver-class-name: com.microsoft.sqlserver.jdbc.SQLServerDriver
+    url: jdbc:sqlserver://47.104.246.36:2468;databaseName=Posmanagement_main  #jdbc:sqlserver://47.104.246.36:2468;databaseName=Posmanagement_main  华隆的
+    username: sa
+    password: pcserver123.
+server:
+  port: 12379
+  servlet:
+    context-path: /Hlyf
+  tomcat:
+    max-http-post-size: -1
+
+#management:
+#  security:
+#    enabled: false #关掉安全认证
+#  port: 8088 #管理端口调整成8088
+#  context-path: /monitor #actuator的访问路径
+endpoints:
+  shutdown:
+    enabled: true
+
+
+logging:
+  config: log4j.properties
+  #src/main/resources/log4j.properties
+  #下面可以不用管   需要的话可以开启  前提是集成eureka并开启euraka的服务
+eureka:
+  client: #客户端注册进eureka服务列表内
+    service-url:
+      defaultZone: http://localhost:7001/eureka
+      # defaultZone: http://eureka7001.com:7001/eureka/,http://eureka7002.com:7002/eureka/,http://eureka7003.com:7003/eureka/
+  instance:
+    instance-id: scan
+    prefer-ip-address: true     #访问路径可以显示IP地址
+
+info:
+  app.name: scan
+  company.name: www.hlyf.com
+  build.artifactId: @project.artifactId@
+  build.version: @project.version@
+
+#以下是民生电商的配置  正式的配置   接手人员暂时不用理会 只需要把下面的 isopen 和 cxisopen 的状态改成false 即可
+minsheng:
+  appid: 946
+  method: minshengec.supplier.order.get
+  supplierid: 946
+  appscret: C8C41C4A18675A74E01C8A20E8A0F662
+  url: http://api.minshengec.com/router
+  isopen: false
+  cxisopen: false
+  amount: 50    #每次拉去多少条
+
+
+mybatis:
+  config-location: classpath:/mybatis-config.xml
+
+kafka:
+  bootstrap:
+    servers: localhost:9092
+  topic:
+    order: topic-order
+  group:
+    id: group-order
+
+
+
+
+
+

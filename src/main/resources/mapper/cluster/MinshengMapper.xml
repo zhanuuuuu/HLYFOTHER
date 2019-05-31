@@ -1,0 +1,57 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.hlyf.dao.cluster.mingSheng">
+
+    <!--
+    -->
+    <insert id="insert_t_MinShengPublicSale_z" >
+        INSERT INTO  t_MinShengPublicSale_z_beifen(
+        orderSn,createDate,beginTime,endTime,totalPrice,
+        paymentMethodName,offlineStoresId
+        )
+        VALUES
+        <foreach collection ="list" item="item" separator =",">
+            (#{item.orderSn},#{item.createDate},#{item.beginTime},
+            #{item.endTime},#{item.totalPrice},#{item.paymentMethodName},
+            #{item.offlineStoresId}
+            )
+        </foreach >
+
+    </insert>
+
+    <!--
+    -->
+    <insert id="insert_t_MingShengPublicSaleDetail_z" >
+        INSERT INTO  t_MingShengPublicSaleDetail_z_beifen(
+        orderSn,createDate,offlineStoresId,productSn,fullName,name,
+        price,quantity,outId,barCode,weight
+        )
+        VALUES
+        <foreach collection ="list" item="item" separator =",">
+            (#{item.orderSn}, #{item.createDate},#{item.offlineStoresId},
+            #{item.productSn},#{item.fullName},#{item.name},#{item.price},
+            #{item.quantity},
+            #{item.outId},#{item.barCode},#{item.weight}
+            )
+        </foreach >
+    </insert>
+
+    <delete id="minshengCopy">
+        <![CDATA[
+        		{call p_minshengCopy(
+        					#{cBarcode,mode=IN,jdbcType=VARCHAR}
+        					)
+        		}
+    	]]>
+    </delete>
+
+    <select id="get_t_MingShengTime" resultType="com.hlyf.domin.mingsheng.t_MingShengTime">
+        <![CDATA[
+        		{call get_t_MingShengTime(
+        					#{cBarcode,mode=IN,jdbcType=VARCHAR}
+        					)
+        		}
+    	]]>
+    </select>
+
+</mapper>

@@ -1,0 +1,684 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.hlyf.dao.cluster.sCanDao">
+
+	<resultMap id="posConfigMap" type="com.hlyf.domin.posConfig">
+		<id column="cID" jdbcType="VARCHAR" property="cID" />
+		<result column="iGoodsNoStart" jdbcType="INTEGER" property="iGoodsNoStart" />
+		<result column="iGoodsNoEnd" jdbcType="INTEGER" property="iGoodsNoEnd" />
+		<result column="iMoneyStart" jdbcType="INTEGER" property="iMoneyStart" />
+		<result column="iMoneyEnd" jdbcType="INTEGER" property="iMoneyEnd" />
+		<result column="iRatio" jdbcType="DECIMAL" property="iRatio" />
+		<result column="bMlt" jdbcType="BIT" property="bMlt" />
+		<result column="bDazhe" jdbcType="BIT" property="bDazhe" />
+		<result column="cCharID" jdbcType="VARCHAR" property="cCharID" />
+		<result column="iMoneyStart18" jdbcType="INTEGER" property="iMoneyStart18" />
+		<result column="iMoneyEnd18" jdbcType="INTEGER" property="iMoneyEnd18" />
+		<result column="iWeightStart" jdbcType="INTEGER" property="iWeightStart" />
+		<result column="iWeightEnd" jdbcType="INTEGER" property="iWeightEnd" />
+		<result column="iWeightStart18" jdbcType="INTEGER" property="iWeightStart18" />
+		<result column="iWeightEnd18" jdbcType="INTEGER" property="iWeightEnd18" />
+	</resultMap>
+
+	<select id="selectAll" parameterType="java.lang.String" resultMap="posConfigMap" statementType="STATEMENT">
+		select cID, iGoodsNoStart, iGoodsNoEnd, iMoneyStart, iMoneyEnd, iRatio, bMlt, bDazhe,
+		cCharID, iMoneyStart18, iMoneyEnd18, iWeightStart, iWeightEnd, iWeightStart18, iWeightEnd18
+		from ${tableName}
+		where cID = '${cID}'
+	</select>
+
+
+
+	<select id="select_posstation" resultType="com.hlyf.domin.JDcom.posstation">
+		SELECT TOP 1 appId, posname, posid, cWHno, Pos_Day, cStoreNo, cMachineID, cMachineKey
+		FROM posstation
+		WHERE 1=1
+		<if test="appId !=null" > AND appId=#{appId}</if>
+		<if test="cStoreNo !=null" > AND cStoreNo=#{cStoreNo}</if>
+		<if test="machineId !=null" > AND cMachineID=#{machineId}</if>
+	</select>
+
+	<!-- 得到单个门店信息 -->
+	<select id="get_cStroe" resultType="com.hlyf.domin.Store" parameterType="java.lang.String">
+		SELECT cStore='['+cStoreNo+'] '+cStoreName,cStoreNo,cStoreName  FROM t_Store
+		where ISNULL(iTypeStore,0)= 0
+		<if test="cStroreNo !=null" > AND cStoreNo=#{cStroreNo}</if>
+	</select>
+
+	<select id="get_vip" resultType="com.hlyf.domin.vip" parameterType="java.lang.String">
+		<![CDATA[
+		SELECT cVipNo, ISNULL(cVipName,'') AS cVipName,cTel,ISNULL(cSex,'') AS cSex,ISNULL(vip_rank,0)AS cVipRanck,
+		ISNULL(cStoreNo,'') AS  cStoreNo,
+		ISNULL(dBirthday,'') AS dBirthday,dValidStart,dValidEnd,
+		fPFrate=CONVERT(DECIMAL(18,2),fPFrate),
+		fCurValue=CONVERT(DECIMAL(18,2),fCurValue),
+		fCurValue_Pos=CONVERT(DECIMAL(18,2),fCurValue_Pos),bVipPrice
+		FROM T_VIP
+		WHERE  cTel=#{mobileNo} OR cVipNo=#{mobileNo}
+		]]>
+	</select>
+
+	<!--获取商品优惠信息 整单计算的结果
+	get_preferentialGoods(@Param("cStoreNo")String cStoreNo,@Param("machineId")String machineId,
+						  @Param("cSheetNo")String cSheetNo,@Param("vipNo")String vipNo,
+						  @Param("fVipScoreRatio")String fVipScoreRatio,@Param("bDiscount")String bDiscount,
+						  @Param("callName")String callName);
+
+					CREATE procedure [dbo].[p_ProcessPosSheet_Z]
+					@cStoreNo varchar(32),
+					@cPosID varchar(32),
+					@cSaleSheetNo varchar(32),
+					@cVipNo varchar(32),
+					@fVipRate varchar(32),
+					@bDiscount varchar(32),
+					@callName VARCHAR(80)
+	-->
+	<select id="get_preferentialGoods" resultType="com.hlyf.domin.JDcom.preferentialGoods" parameterType="java.lang.String">
+		<![CDATA[
+						{call p_ProcessPosSheet_Z(
+									#{cStoreNo,mode=IN,jdbcType=VARCHAR},
+									#{machineId,mode=IN,jdbcType=VARCHAR},
+									#{cSheetNo,mode=IN,jdbcType=VARCHAR},
+									#{vipNo,mode=IN,jdbcType=VARCHAR},
+									#{fVipScoreRatio,mode=IN,jdbcType=VARCHAR},
+									#{bDiscount,mode=IN,jdbcType=VARCHAR},
+									#{callName,mode=IN,jdbcType=VARCHAR}
+									)
+						}
+				]]>
+	</select>
+
+
+
+	<!--得到会员信息  -->
+	<select id="get_vipInfo" resultType="com.hlyf.domin.JDcom.t_vipInfo" parameterType="java.lang.String">
+		<![CDATA[
+						{call p_GetVip_PFrate_byScore(
+									#{mobileNo,mode=IN,jdbcType=VARCHAR}
+									)
+						}
+				]]>
+	</select>
+		<!--SELECT  cGoodsNo,cGoodsName,cBarcode,cStoreNo,cStoreName,cUnit,
+			   cSpec,fNormalPrice,fVipPrice,fVipScore,fCKPrice,isWholePack=1,
+			   youHuiAmount=0.0,amount=fNormalPrice,num=1,packRate=1 FROM t_cStoreGoods
+		WHERE cStoreNo=#{cStoreNo,jdbcType=VARCHAR}
+		      AND cBarcode IN
+				  <foreach collection="barcodeList" item="barcode" index="index"
+						 open="(" close=")" separator=",">
+				       #{barcode}
+				  </foreach>-->
+	<select id="get_cStoreGoods" resultType="com.hlyf.domin.cStoreGoods" >
+
+		SELECT cGoodsNo,cGoodsName,cBarcode,cStoreNo,cStoreName,cUnit,
+		cSpec,fNormalPrice,fVipPrice,fVipScore,fCKPrice,isWholePack=1,fVipScore,
+		youHuiAmount=0.0,amount=fNormalPrice,num=1,packRate=1 FROM t_cStoreGoods
+		WHERE cStoreNo=#{cStoreNo,jdbcType=VARCHAR}
+		AND  <![CDATA[ ( ]]> cBarcode IN
+		<foreach collection="barcodeList" item="barcode" index="index"
+				 open="(" close=")" separator=",">
+			#{barcode}
+		</foreach>
+
+		OR  cGoodsNo IN
+		     <![CDATA[ ( ]]>
+		          SELECT cGoodsNo_parent FROM t_Goods_Union WHERE cBarcode IN
+						<foreach collection="barcodeList" item="barcode" index="index"
+								 open="(" close=")" separator=",">
+							#{barcode}
+						</foreach>
+		      <![CDATA[ ) ]]>
+
+
+		<![CDATA[ ) ]]>
+	</select>
+
+
+	<select id="get_t_goodsKuCurQty_wei" resultType="com.hlyf.domin.t_goodsKuCurQty_wei" >
+		SELECT  cGoodsNo,EndQty,cStoreNo from t_goodsKuCurQty_wei
+		WHERE cStoreNo=#{cStoreNo,jdbcType=VARCHAR}
+		AND cGoodsNo IN
+		<foreach collection="cGoodsNoList" item="barcode" index="index"
+				 open="(" close=")" separator=",">
+			#{barcode}
+		</foreach>
+	</select>
+
+	<!--get_tPloyOfSale @Param("cStoreNo") String cStoreNo,@Param("cBarcode") String cBarcode,@Param("num") int num-->
+	<select id="get_tPloyOfSale" resultType="com.hlyf.domin.tPloyOfSale" >
+		<![CDATA[
+        		{call p_getGeneralPreference(
+        					#{cBarcode,mode=IN,jdbcType=VARCHAR},
+        					#{cStoreNo,mode=IN,jdbcType=VARCHAR},
+        					#{num,mode=IN,jdbcType=INTEGER}
+        					)
+        		}
+    	]]>
+	</select>
+
+	<select id="get_tThirdUsers" resultType="com.hlyf.domin.tThirdUsers" parameterType="java.lang.String">
+		SELECT appId,appSercet,userName FROM tThirdUsers
+		WHERE appId=#{appId}
+	</select>
+
+
+
+	<select id="get_tThirdUsersAll" resultType="com.hlyf.domin.tThirdUsersAll" parameterType="java.lang.String">
+		SELECT appId,appSercet,userName,createTime,totalNumber,leftNumber,beizhu FROM tThirdUsers
+		WHERE appId=#{appId}
+	</select>
+
+	<select id="get_pos_jiesuan" resultType="com.hlyf.domin.JDcom.pos_jiesuan">
+		SELECT TOP 1 sheetno, jstype, mianzhi,
+		  zhekou, zhaoling, shishou,
+		  jstime, zdriqi, jiaozhang,
+		   shouyinyuanno,
+		  shouyinyuanmc, netjiecun, orientmoney,
+		  leftmoney, storevalue, detail,
+		  bPost, cWHno,
+		  cBanci_ID, iLineNo_Banci, cBanci
+       FROM posstation101.dbo.pos_jiesuan
+	</select>
+
+
+	<select id="get_POS_SaleSheetDetail" resultType="com.hlyf.domin.JDcom.POS_SaleSheetDetail">
+		<![CDATA[
+		SELECT  cSaleSheetno, iSeed, cGoodsNo, cGoodsName, cBarCode, cOperatorno, cOperatorName, cVipCardno,
+				 bAuditing, bSettle, fVipScore, fPrice,
+				 fNormalSettle, bVipPrice, fVipPrice, bVipRate, fVipRate, fQuantity,
+				 fAgio, fLastSettle0, fLastSettle,
+				 dSaleDate, cSaleTime, dFinanceDate, cWorkerno,
+				 bPost, bChecked, cVipNo, bHidePrice,
+				 bHideQty, bWeight, fNormalVipScore,
+				 cWHno,fVipScore_cur, cBanci_ID,
+				 iLineNo_Banci,  cBanci
+		FROM posstation101.dbo.POS_SaleSheetDetail
+		WHERE  cSaleSheetno='03201812060082'
+		]]>
+	</select>
+
+
+	<select id="get_cGoods" resultType="com.hlyf.domin.cGoods" >
+		<![CDATA[
+        		{call p_uploadGoods_z(
+        					#{cStoreNo,mode=IN,jdbcType=VARCHAR},
+        					#{pageNum,mode=IN,jdbcType=VARCHAR},
+        					#{number,mode=IN,jdbcType=VARCHAR}
+        					)
+        		}
+    	]]>
+	</select>
+
+	<update id="update_Vip"  >
+		<![CDATA[
+        		{call p_updateVipOther_z(
+        					#{appId,mode=IN,jdbcType=VARCHAR},
+        					#{machineId,mode=IN,jdbcType=VARCHAR},
+        					#{vipNo,mode=IN,jdbcType=VARCHAR},
+        					#{addScore,mode=IN,jdbcType=INTEGER}
+        					)
+        		}
+    	]]>
+	</update>
+
+
+<!--
+    保存单号
+    Integer p_saveSheetNo_Z_call(@Param("cStoreNo")String cStoreNo,@Param("cPosID")String cPosID,
+	@Param("Zdriqi")String Zdriqi,@Param("SerNo")String SerNo,
+	@Param("iSeed_Max")String iSeed_Max,@Param("callName")String callName);
+-->
+	<update id="p_saveSheetNo_Z_call"  >
+		<![CDATA[
+        		{call p_saveSheetNo_Z(
+        					#{cStoreNo,mode=IN,jdbcType=VARCHAR},
+        					#{cPosID,mode=IN,jdbcType=VARCHAR},
+        					#{Zdriqi,mode=IN,jdbcType=VARCHAR},
+        					#{SerNo,mode=IN,jdbcType=INTEGER},
+        					#{iSeed_Max,mode=IN,jdbcType=VARCHAR},
+        					#{callName,mode=IN,jdbcType=INTEGER}
+        					)
+        		}
+    	]]>
+	</update>
+
+	<!--
+	获取单号的
+	commSheetNo getCommSheetNo(@Param("cStoreNo")String cStoreNo,@Param("cPosID")String cPosID,
+	@Param("Zdriqi")String Zdriqi,@Param("callName")String callName);
+
+	@cStoreNo VARCHAR(32),
+	@cPosID VARCHAR(32),
+	@Zdriqi VARCHAR(32),
+	@callName VARCHAR(80)
+	-->
+	<select id="getCommSheetNo"  resultType="com.hlyf.domin.JDcom.commSheetNo" parameterType="java.lang.String">
+		<![CDATA[
+        		{call p_getPos_SerialNoSheetNo_Z(
+        					#{cStoreNo,mode=IN,jdbcType=VARCHAR},
+        					#{cPosID,mode=IN,jdbcType=VARCHAR},
+        					#{Zdriqi,mode=IN,jdbcType=VARCHAR},
+        					#{callName,mode=IN,jdbcType=INTEGER}
+        					)
+        		}
+    	]]>
+	</select>
+
+	<insert id="insert_tThirdUsers_Log" parameterType="java.lang.String">
+		<![CDATA[
+        INSERT  INTO tThirdUsers_Log(appId,userName,userIp,visitData) values(#{appId},#{userName},#{userIp},#{visitData})
+        ]]>
+	</insert>
+
+	<select id="get_tWareHouse" resultType="com.hlyf.domin.tWareHouse" parameterType="java.lang.String">
+		SELECT cWhNo,cWh,cStoreNo FROM t_WareHouse
+		WHERE 1=1
+		<if test="cStoreNo !=null" > AND cStoreNo=#{cStoreNo}</if>
+	</select>
+
+
+	<select id="get_tMethod_of_payment" resultType="com.hlyf.domin.tMethod_of_payment" >
+		SELECT payId,payMethod FROM tMethod_of_payment
+	</select>
+
+	<!--
+	插入销售表
+	Integer insert_tPublicSale_z(List list);
+	-->
+	<insert id="insert_tPublicSale_z" >
+		INSERT INTO  tPublicSale_z(
+		cSheetNo,saleTime,saleType,saleTypeName,saleAllMoney,
+		actualMoney,discountMoney,appId,cStoreNo,cWHno,cMachineID,cMachineName
+		)
+		VALUES
+		<foreach collection ="list" item="item" separator =",">
+			(#{item.cSheetNo}, #{item.saleTime},#{item.saleType},
+			#{item.saleTypeName},#{item.saleAllMoney},#{item.actualMoney},
+			#{item.discountMoney},#{item.appId},#{item.cStoreNo},#{item.cWHno},#{item.cMachineID},#{item.cMachineName} )
+		</foreach >
+	</insert>
+
+	<!--
+	插入京东主表销售数据
+	Integer insert_tPublicSale_JingDong_z(List list);
+	-->
+	<insert id="insert_tPublicSale_JingDong_z" >
+		INSERT INTO  tPublicSale_JingDong_z(
+		cSheetNo,saleTime,saleType,saleTypeName,saleAllMoney,
+		actualMoney,discountMoney,appId,cStoreNo,cWHno,appSheetNo,cVipNo,machineIp
+		)
+		VALUES
+		<foreach collection ="list" item="item" separator =",">
+			(#{item.cSheetNo}, #{item.saleTime},#{item.saleType},
+			#{item.saleTypeName},#{item.saleAllMoney},#{item.actualMoney},
+			#{item.discountMoney},#{item.appId},#{item.cStoreNo},#{item.cWHno},
+			#{item.appSheetNo},#{item.cVipNo},#{item.machineIp} )
+		</foreach>
+	</insert>
+
+	<!--
+	插入销售表详情
+	Integer insert_tPublicSaleDetail_z(List list);
+	-->
+	<insert id="insert_tPublicSaleDetail_z" >
+		INSERT INTO  tPublicSaleDetail_z(
+		cSheetNo,appId,cStoreNo,cWHno,bAuditing,cGoodsNo,cGoodsName,
+		cBarcode,fNormalPrice,discountPrice,discountMoney,iSeed,
+		fQuantity
+		)
+		VALUES
+		<foreach collection ="list" item="item" separator =",">
+			(#{item.cSheetNo}, #{item.appId},#{item.cStoreNo},#{item.cWHno},
+			#{item.bAuditing},#{item.cGoodsNo},
+			#{item.cGoodsName},#{item.cBarcode},#{item.fNormalPrice},#{item.discountPrice},
+			#{item.discountMoney},#{item.iSeed},#{item.fQuantity})
+		</foreach >
+	</insert>
+
+	<!--把数据插入到京东详情表  tPublicSaleDetail_JingDong_z 附表-->
+	<insert id="insert_tPublicSaleDetail_JingDong_z" parameterType="Map" statementType="STATEMENT" >
+
+		INSERT INTO
+
+		<choose>
+			<when test="tableName != null ">
+				${tableName}
+			</when>
+			<otherwise>
+				Posmanagement_main_JDH.dbo.tPublicSaleDetail_JingDong_z
+			</otherwise>
+		</choose>
+
+
+		(
+		cSheetNo,appId,cStoreNo,cWHno,bAuditing,cGoodsNo,cGoodsName,
+		cBarcode,fNormalPrice,discountPrice,discountMoney,iSeed,
+		fQuantity,cVipNo,machineIp,bWeight,cFreshBarcode
+		)
+		VALUES
+		<foreach collection ="list" item="item" separator ="," >
+			('${item.cSheetNo}', '${item.appId}','${item.cStoreNo}','${item.cWHno}',
+			${item.bAuditing},'${item.cGoodsNo}',
+			'${item.cGoodsName}','${item.cBarcode}',${item.fNormalPrice},${item.discountPrice},
+			${item.discountMoney},${item.iSeed},${item.fQuantity},'${item.cVipNo}','${item.machineIp}'
+			,'${item.bWeight}','${item.cFreshBarcode}')
+		</foreach >
+
+	</insert>
+
+    <!--delete_pos_jiesuan  删除分库的结算表（主表）数据-->
+	<delete id="delete_pos_jiesuan" parameterType="Map" statementType="STATEMENT" >
+		DELETE
+			<choose>
+				<when test="tableName != null ">
+					${tableName}
+				</when>
+				<otherwise>
+					posstation101.dbo.pos_jiesuan
+				</otherwise>
+			</choose>
+		WHERE  sheetno='${sheetno}'
+	</delete>
+
+	<!--delete_POS_SaleSheetDetail  删除分库的结算表（附表）数据-->
+	<delete id="delete_POS_SaleSheetDetail" parameterType="Map" statementType="STATEMENT" >
+		DELETE
+		<choose>
+			<when test="tableName != null ">
+				${tableName}
+			</when>
+			<otherwise>
+				posstation101.dbo.POS_SaleSheetDetail
+			</otherwise>
+		</choose>
+		WHERE  cSaleSheetno='${sheetno}'
+	</delete>
+	<!--插入分库的结算表-->
+	<insert id="insert_pos_jiesuan" parameterType="Map" statementType="STATEMENT" >
+
+		INSERT INTO
+
+		<choose>
+			<when test="tableName != null ">
+				${tableName}
+			</when>
+			<otherwise>
+				posstation101.dbo.pos_jiesuan
+			</otherwise>
+		</choose>
+
+
+		(
+		sheetno, jstype, mianzhi,zhekou,
+		zhaoling, shishou,jstime, zdriqi,
+		jiaozhang,shouyinyuanno,shouyinyuanmc, netjiecun,
+		orientmoney,leftmoney, storevalue, detail,
+		bPost, cWHno,cBanci_ID, iLineNo_Banci,
+		cBanci
+		)
+		VALUES
+		<foreach collection ="list" item="item" separator ="," >
+			('${item.sheetno}', '${item.jstype}',${item.mianzhi},${item.zhekou},
+			${item.zhaoling},${item.shishou},'${item.jstime}','${item.zdriqi}',
+			${item.jiaozhang},'${item.shouyinyuanno}','${item.shouyinyuanmc}',${item.netjiecun},
+			${item.orientmoney},${item.leftmoney},${item.storevalue},'${item.detail}',
+			${item.bPost},'${item.cWHno}','${item.cBanci_ID}',${item.iLineNo_Banci},
+			'${item.cBanci}'
+			)
+		</foreach >
+
+	</insert>
+
+	<!---->
+	<!--插入分库的结算详情表 对照工整的数据-->
+	<insert id="insert_POS_SaleSheetDetail" parameterType="Map" statementType="STATEMENT" >
+
+		INSERT INTO
+
+		<choose>
+			<when test="tableName != null ">
+				${tableName}
+			</when>
+			<otherwise>
+				posstation101.dbo.POS_SaleSheetDetail
+			</otherwise>
+		</choose>
+
+
+		(
+		cSaleSheetno, iSeed, cGoodsNo, cGoodsName, cBarCode,
+		cOperatorno, cOperatorName, cVipCardno,bAuditing, bSettle,
+		fVipScore, fPrice,fNormalSettle, bVipPrice, fVipPrice, bVipRate,
+		fVipRate, fQuantity,fAgio, fLastSettle0, fLastSettle,
+		dSaleDate, cSaleTime, dFinanceDate, cWorkerno,bPost, bChecked,
+		cVipNo, bHidePrice,bHideQty, bWeight, fNormalVipScore,
+		cWHno,  fVipScore_cur, cBanci_ID,iLineNo_Banci,  cBanci
+		)
+		VALUES
+		<foreach collection ="list" item="item" separator ="," >
+			('${item.cSaleSheetno}', ${item.iSeed},'${item.cGoodsNo}','${item.cGoodsName}','${item.cBarCode}',
+			'${item.cOperatorno}','${item.cOperatorName}','${item.cVipCardno}',${item.bAuditing},${item.bSettle},
+			${item.fVipScore},${item.fPrice},${item.fNormalSettle},${item.bVipPrice},${item.fVipPrice},${item.bVipRate},
+			${item.fVipRate},${item.fQuantity},${item.fAgio},${item.fLastSettle0},${item.fLastSettle},
+			'${item.dSaleDate}','${item.cSaleTime}','${item.dFinanceDate}','${item.cWorkerno}',${item.bPost},${item.bChecked},
+			'${item.cVipNo}',${item.bHidePrice},${item.bHideQty},${item.bWeight},${item.fNormalVipScore},
+			'${item.cWHno}',${item.fVipScore_cur},'${item.cBanci_ID}',${item.iLineNo_Banci},
+			'${item.cBanci}'
+			)
+		</foreach >
+
+	</insert>
+
+	<!-- 京东 根据单号得订单主表信息 -->
+	<select id="get_tPublicSale_JingDong_z" resultType="com.hlyf.domin.JDcom.tPublicSale_JingDong_z" parameterType="java.lang.String">
+		SELECT cSheetNo,saleTime,saleType,saleTypeName,saleAllMoney,
+		actualMoney,discountMoney,appId,cStoreNo,cWHno,appSheetNo,cVipNo,isAccount,machineIp
+		FROM tPublicSale_JingDong_z
+		WHERE 1=1
+		<if test="appId != null">
+			AND appId=#{appId}
+		</if>
+		<if test="appSheetNo != null">
+			AND appSheetNo=#{appSheetNo}
+		</if>
+		<if test="cSheetNo != null">
+			AND cSheetNo=#{cSheetNo}
+		</if>
+
+	</select>
+	<!--京东附表  -->
+	<select id="get_tPublicSaleDetail_JingDong_z" resultType="com.hlyf.domin.JDcom.tPublicSaleDetail_JingDong_z" parameterType="java.lang.String">
+		SELECT
+		cSheetNo,appId,cStoreNo,cWHno,bAuditing,cGoodsNo,cGoodsName,
+		cBarcode,fNormalPrice,discountPrice,discountMoney,iSeed,
+		fQuantity,cVipNo
+		FROM tPublicSaleDetail_JingDong_z
+		WHERE cSheetNo=#{cSheetNo}
+	</select>
+
+	<!--updateOrderTypeToJd  更改订单状态的过程-->
+	<select id="updateOrderTypeToJd" parameterType="map" statementType="CALLABLE">
+		{#{iFlag,mode=OUT,jdbcType=INTEGER} =
+						call p_updateOrderToJd_z(#{cSheetNo,mode=IN,jdbcType=VARCHAR},
+												#{appId,mode=IN,jdbcType=VARCHAR},
+												#{iFlag,mode=OUT,jdbcType=INTEGER})}
+	</select>
+
+	<!--calAmountOrder  计算整单优惠信息-->
+	<select id="calAmountOrder" parameterType="map" statementType="CALLABLE">
+		{#{iFlag,mode=OUT,jdbcType=INTEGER} =
+		call p_calAmountOrder_z(#{cSheetNo,mode=IN,jdbcType=VARCHAR},
+		#{appId,mode=IN,jdbcType=VARCHAR},
+		#{tableName,mode=IN,jdbcType=VARCHAR},
+		#{iFlag,mode=OUT,jdbcType=INTEGER})}
+	</select>
+
+	<select id="get_tPublicSale_z" resultType="com.hlyf.domin.tPublicSale_z" parameterType="java.lang.String">
+		SELECT cSheetNo,saleTime,saleType,saleTypeName,saleAllMoney,
+		actualMoney,discountMoney,appId,cStoreNo,cWHno
+		FROM tPublicSale_z
+		WHERE cSheetNo=#{cSheetNo} AND appId=#{appId}
+	</select>
+
+	<!--
+	退货
+	private String cMachineID;
+   private String cMachineName;
+	-->
+	<insert id="insert_returntPublicSale_z" >
+		INSERT INTO  tPublicSale_z(
+		cSheetNo,saleTime,saleType,saleTypeName,saleAllMoney,
+		actualMoney,discountMoney,appId,cStoreNo,cWHno,returnSale,returnTime,returncSheetNo,beizhu,cMachineID,cMachineName
+		)
+		VALUES
+		<foreach collection ="list" item="item" separator =",">
+			(#{item.cSheetNo}, #{item.saleTime},#{item.saleType},
+			#{item.saleTypeName},#{item.saleAllMoney},#{item.actualMoney},
+			#{item.discountMoney},#{item.appId},#{item.cStoreNo},#{item.cWHno},#{item.returnSale},
+			#{item.returnTime},#{item.returncSheetNo},#{item.beizhu},#{item.cMachineID},#{item.cMachineName}
+			)
+		</foreach >
+	</insert>
+
+	<select id="get_returntPublicSale_z" resultType="com.hlyf.domin.returntPublicSale_z" parameterType="java.lang.String">
+		<![CDATA[
+		SELECT cSheetNo,saleTime,saleType,saleTypeName,saleAllMoney,
+		actualMoney,discountMoney,appId,cStoreNo,cWHno,returnSale=ISNULL(returnSale,1),
+		returnTime=ISNULL(returnTime,''),returncSheetNo=ISNULL(returncSheetNo,''),beizhu=ISNULL(beizhu,'')
+		FROM tPublicSale_z
+		WHERE cSheetNo=#{cSheetNo} AND appId=#{appId}
+
+		 ]]>
+	</select>
+
+	<select id="get_tPublicSaleDetail_z" resultType="com.hlyf.domin.tPublicSaleDetail_z" parameterType="java.lang.String">
+		SELECT
+		cSheetNo,appId,cStoreNo,cWHno,bAuditing,cGoodsNo,cGoodsName,
+		cBarcode,fNormalPrice,discountPrice,discountMoney,iSeed,
+		fQuantity
+		FROM tPublicSaleDetail_z
+		WHERE cSheetNo=#{cSheetNo}
+	</select>
+
+   <!--每天晚上12点  修改客户可以访问的次数-->
+	<update id="update_leftNumber">
+		UPDATE tThirdUsers
+		SET leftNumber=totalNumber
+	</update>
+
+	<update id="update_leftNumber_reduce" parameterType="java.lang.String">
+		<![CDATA[
+		UPDATE tThirdUsers
+		SET leftNumber=leftNumber-1
+		WHERE appId=#{appId}
+		]]>
+	</update>
+
+	<!-- 得到会员商品的数据-->
+	<select id="gett_VipcGoodsPrice" resultType="com.hlyf.domin.t_VipcGoodsPrice" parameterType="java.lang.String">
+		<![CDATA[
+			select a.dDate, --制单日期
+			a.dDateBgn,     --开始日期
+			a.dDateEnd,     --开结束日期
+			a.cSheetno,--单号
+			bReceive, -- 是否实施
+			cGoodsNo,cGoodsName,cBarcode,
+			fVipPrice, --会员价
+			bLimitQty, --是否限购
+			fLimitQty, --每单限购
+			fShiDuanQty,--会员实施时段限购
+			--会员价执行时间。
+			a.Week1,a.Week2,a.Week3,a.Week4,a.Week5,a.Week6,a.Week7,a.Hour0,a.Hour1,
+			a.Hour2,a.Hour3,a.Hour4,a.Hour5,a.Hour6,a.Hour7,a.Hour8,a.Hour9,a.Hour10,a.Hour11,
+			a.Hour12,a.Hour13,a.Hour14,a.Hour15,a.Hour16,a.Hour17,a.Hour18,a.Hour19,
+			a.Hour20,a.Hour21,a.Hour22,a.Hour23
+			from t_VipcGoodsPrice a,t_VipcGoodsPriceDetail b
+			where a.cSheetNo=b.cSheetNo
+			 AND ','+cExeStoreNO  LIKE #{cStoreNo}
+			 AND CONVERT(VARCHAR(100),GETDATE(),23) BETWEEN CONVERT(VARCHAR(100),a.dDateBgn,23) AND CONVERT(VARCHAR(100),a.dDateEnd,23)
+		]]>
+	</select>
+
+	<!-- 得到促销商品的数据-->
+	<select id="gett_t_PloyOfSale" resultType="com.hlyf.domin.t_PloyOfSale" parameterType="java.lang.String">
+		<![CDATA[
+			SELECT
+				b.cStoreNo,
+				a.cPloyNo,cGoodsNo,cGoodsName,
+				fPrice_SO,   --促销价
+				dDateStart,dDateEnd, --促销时段
+				bEnabled,Week1,Week2,Week3,
+				Week4,Week5,Week6,Week7,Hour0,Hour1,Hour2,Hour3,Hour4,Hour5,Hour6,Hour7,
+				Hour8,Hour9,Hour10,Hour11,Hour12,Hour13,Hour14,Hour15,Hour16,Hour17,Hour18,
+				Hour19,Hour20,Hour21,Hour22,Hour23,
+				fVipValue, --积分值
+				bLimitQty, --是否启用每单限购
+				fLimitQty, --限购数量
+				 bJiOu, --是否奇偶销售
+				 fQty_Ji, --奇数量
+				 fPrice_ji,--奇价格
+				 fQty_Ou, --偶数量
+				 fPrice_Ou, --偶价格
+				 bSuspend-- 是否暂停
+				FROM t_PloyOfSale a,
+						(SELECT DISTINCT cPloyNo,cStoreNo FROM
+							(
+							SELECT  cPloyNo,cStoreNo FROM t_PloyStore
+							WHERE  CONVERT(VARCHAR(100),GETDATE(),23) BETWEEN CONVERT(VARCHAR(100),dDate1,23) AND CONVERT(VARCHAR(100),dDate2,23)
+							UNION ALL
+							SELECT cPloyNo,cStoreNo FROM t_PloyOfSale
+							WHERE CONVERT(VARCHAR(100),GETDATE(),23) BETWEEN CONVERT(VARCHAR(100),dDateStart,23) AND CONVERT(VARCHAR(100),dDateEnd,23)
+							) C
+						GROUP BY cPloyNo,cStoreNo
+						) b
+				where a.cPloyNo=b.cPloyNo AND b.cStoreNo=#{cStoreNo}
+				AND CONVERT(VARCHAR(100),GETDATE(),23) BETWEEN CONVERT(VARCHAR(100),a.dDateStart,23) AND CONVERT(VARCHAR(100),a.dDateEnd,23)
+
+
+		]]>
+	</select>
+
+	<!--selectByNowData 得到自定义组合促销-->
+	<select id="selectByNowData" resultType="com.hlyf.domin.t_PloyGroupOfSale" parameterType="java.lang.String">
+		<![CDATA[
+			SELECT cPloyNo, cGoodsNo, cGroupNo, dDateStart, dDateEnd, cGoodsName, fQuantity_Ploy,
+					fInPrice, fPrice_SO, fSupRatio, bEnabled, Week1, Week2, Week3, Week4, Week5, Week6,
+					Week7, Hour0, Hour1, Hour2, Hour3, Hour4, Hour5, Hour6, Hour7, Hour8, Hour9, Hour10,
+					Hour11, Hour12, Hour13, Hour14, Hour15, Hour16, Hour17, Hour18, Hour19, Hour20, Hour21,
+					Hour22, Hour23, dCreateDate, cStoreNo, cOpertionNo, cOpertionName, cExaminNo, cExaminName,
+					dShenHeDate, cLastOpertionNo, cLastOpertionName, dLastDate, cBeizhu, fNormalPrice,
+					bDownLoad, dUpdate, iGroupType, fRatio, iSheetType, iLineNo, cStoreInNo
+			FROM t_PloyGroupOfSale
+    		WHERE  ','+cStoreNo  LIKE #{cStoreNo}
+			AND CONVERT(VARCHAR(100),GETDATE(),23) BETWEEN CONVERT(VARCHAR(100),dDateStart,23) AND CONVERT(VARCHAR(100),dDateEnd,23)
+
+
+		]]>
+	</select>
+
+	<!--selectAllByNowData 品类打折促销-->
+	<select id="gett_PloyOfSale_GoodsType" resultType="com.hlyf.domin.t_PloyOfSale_GoodsType" parameterType="java.lang.String">
+		<![CDATA[
+			select A.cPloyNo, cGoodsTypeNo, cGoodsTypeName, fQuantity_Ploy, fInPrice, fPrice_SO,
+					A.dDateStart, cTimeStart,A.dDateEnd, cTimeEnd, iPriority, bSO, bPresent, cPresentPloyNo,
+					cPloyTypeNo, cPloyTypeName, bEnabled, Week1, Week2, Week3, Week4, Week5, Week6, Week7,
+					Hour0, Hour1, Hour2, Hour3, Hour4, Hour5, Hour6, Hour7, Hour8, Hour9, Hour10, Hour11,
+					Hour12, Hour13, Hour14, Hour15, Hour16, Hour17, Hour18, Hour19, Hour20, Hour21, Hour22,
+					Hour23, fSupRatio, fVipValue, bMult, bLimitQty, fLimitQty, fRatio_JiOu, bJiOu, fQty_Ji,
+					fPrice_ji, fQty_Ou, fPrice_Ou, bSuspend, cSuspendMan, dSuspend, fPrice_SO_old, cUpdateMan,
+					dUpdate, bDownLoad, b_ftp, iPre_Days, iOver_Days, dPeriodStart_1, dPeriodEnd_1, fPeriodDiscount_1,
+					dPeriodStart_2, dPeriodEnd_2, fPeriodDiscount_2, dPeriodStart_3, dPeriodEnd_3, fPeriodDiscount_3,
+					dPeriodStart_4, dPeriodEnd_4, fPeriodDiscount_4, dPeriodStart_5, dPeriodEnd_5, fPeriodDiscount_5,
+					dPeriodStart_6, dPeriodEnd_6, fPeriodDiscount_6, dPeriodStart_7, dPeriodEnd_7, fPeriodDiscount_7,
+					dPeriodStart_8, dPeriodEnd_8, fPeriodDiscount_8, dPeriodStart_9, dPeriodEnd_9, fPeriodDiscount_9,
+					dPeriodStart_10, dPeriodEnd_10, fPeriodDiscount_10, dPeriodStart_11, dPeriodEnd_11,
+					fPeriodDiscount_11, dPeriodStart_12, dPeriodEnd_12, fPeriodDiscount_12, A.cStoreNo,
+					cStoreName, bVip, iLineNo
+			from t_PloyOfSale_GoodsType A INNER JOIN t_PloyStore_GoodsType B
+					ON A.cPloyNo=B.cPloyNo  AND B.cStoreNo=#{cStoreNo}
+			AND CONVERT(VARCHAR(100),GETDATE(),23) BETWEEN CONVERT(VARCHAR(100),dDateStart,23) AND CONVERT(VARCHAR(100),dDateEnd,23)
+
+		]]>
+	</select>
+
+</mapper>
