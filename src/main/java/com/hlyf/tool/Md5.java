@@ -70,7 +70,7 @@ public class Md5 {
             return sb.toString();
         }catch (Exception e){
             e.printStackTrace();
-            logger.error("得到的排序出错了",e.getMessage());
+            logger.error("得到的排序出错了 {}",e.getMessage());
         }
         return "";
     }
@@ -82,7 +82,7 @@ public class Md5 {
            return MD5Encode((appSecret+getOrderSign(paramValues)+appSecret),"UTF-8").toUpperCase();
         }catch (Exception e){
             e.printStackTrace();
-           logger.error("得到签名出错了",e.getMessage());
+           logger.error("得到签名出错了 {}",e.getMessage());
         }
         return "";
     }
@@ -91,7 +91,7 @@ public class Md5 {
         try{
             return sign(appSecret,paramValues).equals(sign);
         }catch (Exception e){
-            logger.error("",e.getMessage());
+            logger.error(" {}",e.getMessage());
         }
         return false;
     }
@@ -108,7 +108,7 @@ public class Md5 {
             System.out.println("得到的签名  "+MD5Encode((appSecret+param+appSecret).trim(),"UTF-8").toUpperCase());
             return MD5Encode((appSecret+param+appSecret).trim(),"UTF-8").toUpperCase().equals(sign.trim());
         }catch (Exception e){
-            logger.error("",e.getMessage());
+            logger.error(" {}",e.getMessage());
         }
         return false;
     }

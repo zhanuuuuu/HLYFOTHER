@@ -18,6 +18,7 @@ public enum ResultOk {
     STORENO_OR_WHNO_ERROR("1011","门店编号或仓库编号有误"),
     RETURN_ORDERNO_ERROR("1012","退货单号有误"),
     ORDERNO_ISNOT_KONW("1013","该单号无效"),
+    STORE_NOT_EXIT("1014","门店不存在"),
     Tocken_FAIL("9998","token无效");
     private String value;
     private String desc;

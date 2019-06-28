@@ -120,6 +120,12 @@
 			#{barcode}
 		</foreach>
 
+		OR cGoodsNo IN
+		<foreach collection="barcodeList" item="barcode" index="index"
+				 open="(" close=")" separator=",">
+			#{barcode}
+		</foreach>
+
 		OR  cGoodsNo IN
 		     <![CDATA[ ( ]]>
 		          SELECT cGoodsNo_parent FROM t_Goods_Union WHERE cBarcode IN

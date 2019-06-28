@@ -418,12 +418,17 @@ public class ScanConntroller {
      */
     @RequestMapping(value = "/api/getFreshCodeRule", method = RequestMethod.POST)
     @ResponseBody
-    public  String getFreshCodeRule(@RequestParam(value = "tableName",required = false,defaultValue = "posstation101.dbo.Pos_Config") String tableName,
+    public  String getFreshCodeRule(@RequestParam(value = "tableName",required = false,defaultValue = "posstation006.dbo.Pos_Config") String tableName,
                                      @RequestParam(value = "condition",required = false,defaultValue = "条码秤") String condition,
                                      @RequestParam(value = "cStoreNo",required = false,defaultValue = "cStoreNo") String cStoreNo){
         try{
 
-            List<posConfig> list=CanService.selectAllS(tableName,condition);
+            posstation posstation=CanService.select_posstationS(null,null,cStoreNo);
+            if(posstation==null){
+                return new resultMsg(false, "[]", ResultOk.STORE_NOT_EXIT.getValue(),  ResultOk.STORE_NOT_EXIT.getDesc()).toString();
+            }
+
+            List<posConfig> list=CanService.selectAllS((posstation.getPos_Day()+".dbo.Pos_Config").trim(),condition);
             String result="";
             if(list!=null && !list.isEmpty()){
                 try{
