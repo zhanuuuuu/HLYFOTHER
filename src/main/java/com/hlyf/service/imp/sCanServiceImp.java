@@ -277,9 +277,11 @@ public class sCanServiceImp implements sCanService {
             timeout=36000,
             rollbackFor={RuntimeException.class, Exception.class},
             readOnly = false)
-    public String getPreGoodsInfoS(List<tPublicSale_JingDong_z> tPublicSale_JingDong_zlist, List<tPublicSaleDetail_JingDong_z> tPublicSaleDetail_JingDong_zlist
-            ,String fVipRate,String bDiscount,String tableName,posstation posstation) {
+    public String getPreGoodsInfoS(List<tPublicSale_JingDong_z> tPublicSale_JingDong_zlist,
+                                   List<tPublicSaleDetail_JingDong_z> tPublicSaleDetail_JingDong_zlist,
+                                   String fVipRate,String bDiscount,String tableName,posstation posstation,String sheetNotrue) {
         String result=new resultMsg(false,"[]", ResultOk.DATA_PASR_ERROR.getValue(),ResultOk.DATA_PASR_ERROR.getDesc()).toString();
+
 
         tPublicSale_JingDong_z tPublicSaleZ_JingDong=null;
 
@@ -358,7 +360,10 @@ public class sCanServiceImp implements sCanService {
             //插入完临时表后做计算  计算完后做查询
             List<preferentialGoods> list =get_preferentialGoodsS(cStoreNo,posstation.getPosid(),cSheeetNo,
                     vipNo,String.valueOf(fVipRate),String.valueOf(bDiscount),(posstation.getPos_Day()+".dbo.p_ProcessPosSheet").trim());
-
+            //这里重置单号返回信息
+            for(preferentialGoods p:list){
+                p.setcSaleSheetno_time(sheetNotrue);
+            }
             result=new resultMsg(true,listBean.getBeanJson(list), ResultOk.SUCCESS.getValue(),ResultOk.SUCCESS.getDesc()).toString();
         }catch (Exception e){
             logger.error("京东下订单出错   "+e.getMessage());

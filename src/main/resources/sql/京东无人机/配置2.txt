@@ -17,10 +17,17 @@ cStoreNo：006
 cMachineID：QSDRTYGBNU
 cMachineKey：9B488F13720F59C5AEB1C9D7BE6BD488
 
-
+第三台机器(陈姐测试)
+cStoreNo：006
+cMachineID：ABCDEFGHIJKLMN
+cMachineKey：5E23E7AA95CC97AC124107444B55DD30
 
 INSERT INTO tThirdUsers (appId,appSercet,userName,beizhu)
 VALUES('20190621103813','0bd3342663fea2dba42a2735f2b1cb1d','京东','京东正式环境乐家优鲜')
+
+INSERT INTO posstation(appId,posname,posid,cWHno,Pos_Day,cStoreNo,cMachineID,cMachineKey,cStoreName,appName) VALUES
+('20190621103813', 'ZZ', '83', '006', 'posstation006', '006', 'ABCDEFGHIJKLMN', '5E23E7AA95CC97AC124107444B55DD30', 'H.+连锁超市-西三旗店', '京东无人售货')
+
 
 
 INSERT INTO posstation(appId,posname,posid,cWHno,Pos_Day,cStoreNo,cMachineID,cMachineKey,cStoreName,appName) VALUES

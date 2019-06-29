@@ -856,6 +856,22 @@ public class ScanConntroller {
             return new resultMsg(false, "[]", ResultError.MACHINE_REGIST.getValue(),  ResultError.MACHINE_REGIST.getDesc()).toString();
         }
 
+        //获取单号
+        commSheetNo commSheetNo=null;
+        try{
+            commSheetNo=CanService
+                    .getCommSheetNoS(cStoreNo,posstation.getPosid().trim(),
+                            new SimpleDateFormat("yyyy-MM-dd").format(new Date()),
+                            posstation.getPos_Day().trim()+".dbo.p_getPos_SerialNoSheetNo");
+        }catch (Exception e){
+            logger.info("生成单号出错(错误信息): {}",e.getMessage());
+            return new resultMsg(false, "[]", ResultError.SHEETNO_ERROR.getValue(),  ResultError.SHEETNO_ERROR.getDesc()).toString();
+
+        }
+
+
+
+
 
         //设置appId
         try {
@@ -886,7 +902,7 @@ public class ScanConntroller {
             }
             str= listBean.getBeanJson(list_tPublicSale_JingDong_z);
             logger.info("数据集合 list_tPublicSale_JingDong_z"+str);
-            String result=CanService.getPreGoodsInfoS(list_tPublicSale_JingDong_z,list_tPublicSaleDetail_JingDong_z,fVipRate,bDiscount,posstation.getPos_Day(),posstation);
+            String result=CanService.getPreGoodsInfoS(list_tPublicSale_JingDong_z,list_tPublicSaleDetail_JingDong_z,fVipRate,bDiscount,posstation.getPos_Day(),posstation,commSheetNo.getcSheetNo());
             return result;
 
         } catch (Exception e) {

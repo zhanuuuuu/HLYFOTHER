@@ -64,7 +64,7 @@ public interface sCanService {
     //获取整单优惠信息
     String getPreGoodsInfoS(List<tPublicSale_JingDong_z> tPublicSale_JingDong_zlist,
                             List<tPublicSaleDetail_JingDong_z> tPublicSaleDetail_JingDong_zlist,
-                            String fVipRate,String bDiscount,String tableName,posstation posstation);
+                            String fVipRate,String bDiscount,String tableName,posstation posstation,String sheetNotrue);
 
     //插入真正的结算表中
 
