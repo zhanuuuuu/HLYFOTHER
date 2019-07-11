@@ -420,9 +420,8 @@ public class ScanConntroller {
     @ResponseBody
     public  String getFreshCodeRule(@RequestParam(value = "tableName",required = false,defaultValue = "posstation006.dbo.Pos_Config") String tableName,
                                      @RequestParam(value = "condition",required = false,defaultValue = "条码秤") String condition,
-                                     @RequestParam(value = "cStoreNo",required = false,defaultValue = "cStoreNo") String cStoreNo){
+                                     @RequestParam(value = "cStoreNo",required = true,defaultValue = "cStoreNo") String cStoreNo){
         try{
-
             posstation posstation=CanService.select_posstationS(null,null,cStoreNo);
             if(posstation==null){
                 return new resultMsg(false, "[]", ResultOk.STORE_NOT_EXIT.getValue(),  ResultOk.STORE_NOT_EXIT.getDesc()).toString();
@@ -578,7 +577,15 @@ public class ScanConntroller {
             if(stringList.isEmpty()){
                 stringList.add("");
             }
-            List<cStoreGoods> list=CanService.get_cStoreGoodsS(cStoreNo,stringList);
+            List<cStoreGoods> list=null;
+            if(redison.getIsdandian()){
+                //单店的走这里
+                list=CanService.get_cStoreGoodsDanDianS(cStoreNo,stringList);
+            }else {
+                //连锁的走这里
+                list=CanService.get_cStoreGoodsS(cStoreNo,stringList);
+            }
+
             String result="";
             if(list!=null && !list.isEmpty()){
                 try{
@@ -820,6 +827,45 @@ public class ScanConntroller {
         }
     }
 
+    /**
+     *  京东专用更改积分信息
+     */
+    @RequestMapping(value = "/api/updateVipValueByJingDong", method = RequestMethod.POST)
+    @ResponseBody
+    public  String updateVipValueByJingDong(@RequestParam(value = "cStoreNo",required = true) String cStoreNo,
+                                            @RequestParam(value = "cMachineID",required = true) String cMachineID,
+                                            @RequestParam(value = "cMachineKey",required = true) String cMachineKey,
+                                              @RequestParam(value = "vipNo",required = true) String vipNo,
+                                              @RequestParam(value = "addScore",required = true) String addScore,
+                                              HttpServletRequest request) {
+        String appId=request.getHeader("requestid");
+        try{
+            //获取无人售货机对应我们的数据库中的前台机器的编号
+            if(!cMachineKey.trim().equals(MD5Encode(appKey+cMachineID,"UTF-8").trim().toUpperCase())){
+                return new resultMsg(false, "[]", ResultError.MACHINE_SECRET_KEY.getValue(),  ResultError.MACHINE_SECRET_KEY.getDesc()).toString();
+            }
+
+            posstation posstation=CanService.select_posstationS(appId,cMachineID,cStoreNo);
+            if(posstation==null){
+                return new resultMsg(false, "[]", ResultError.MACHINE_REGIST.getValue(),  ResultError.MACHINE_REGIST.getDesc()).toString();
+            }
+
+            Integer integer=CanService.update_VipS(appId,cMachineID,vipNo,Double.parseDouble(addScore));
+            if(integer>0){
+                List<vip> list =CanService.get_vipS(vipNo);
+                String result="";
+                result= listBean.getBeanJson(list);
+                return new resultMsg(true,result, ResultOk.SUCCESS.getValue(),ResultOk.SUCCESS.getDesc()).toString();
+            }else {
+                return new resultMsg(true,"[]", ResultOk.VIPNO_NOT_EXIT.getValue(),ResultOk.VIPNO_NOT_EXIT.getDesc()).toString();
+            }
+
+        }catch (Exception e){
+            e.printStackTrace();
+            logger.error(e.getMessage());
+            return new resultMsg(false,"[]",ResultOk.DATA_PASR_ERROR.getValue(),ResultOk.DATA_PASR_ERROR.getDesc()).toString();
+        }
+    }
 
     /**
      * 京东获取优惠商品信息的接口
@@ -836,7 +882,7 @@ public class ScanConntroller {
     @RequestMapping(value = "/api/getPreGoodsInfo", method = RequestMethod.POST)
     @ResponseBody
     public  String getPreGoodsInfo(@RequestParam(value = "data",required = true) String data,
-                                   @RequestParam(value = "vipNo",required = false,defaultValue = "09") String vipNo,
+                                   @RequestParam(value = "vipNo",required = false,defaultValue = "999999999999999999") String vipNo,
                                    @RequestParam(value = "fVipRate",required = false,defaultValue = "100") String fVipRate,
                                    @RequestParam(value = "bDiscount",required = false,defaultValue = "0") String bDiscount,
                                    @RequestParam(value = "cStoreNo",required = true) String cStoreNo,
@@ -863,15 +909,12 @@ public class ScanConntroller {
                     .getCommSheetNoS(cStoreNo,posstation.getPosid().trim(),
                             new SimpleDateFormat("yyyy-MM-dd").format(new Date()),
                             posstation.getPos_Day().trim()+".dbo.p_getPos_SerialNoSheetNo");
+
         }catch (Exception e){
             logger.info("生成单号出错(错误信息): {}",e.getMessage());
             return new resultMsg(false, "[]", ResultError.SHEETNO_ERROR.getValue(),  ResultError.SHEETNO_ERROR.getDesc()).toString();
 
         }
-
-
-
-
 
         //设置appId
         try {
@@ -925,13 +968,23 @@ public class ScanConntroller {
     @ResponseBody
     public  String submitData(@RequestParam(value = "data",required = true) String data,
                               @RequestParam(value = "saleType",required = true) String saleType,
-                               @RequestParam(value = "cStoreNo",required = true) String cStoreNo,
-                               @RequestParam(value = "cMachineID",required = true) String cMachineID,
-                               @RequestParam(value = "cMachineKey",required = true) String cMachineKey,
+                              @RequestParam(value = "cStoreNo",required = true) String cStoreNo,
+                              @RequestParam(value = "cMachineID",required = true) String cMachineID,
+                              @RequestParam(value = "cMachineKey",required = true) String cMachineKey,
+                              @RequestParam(value = "vipNo",required = false,defaultValue = "") String vipNo,
+                              @RequestParam(value = "vipScoreAdd",required = false,defaultValue = "0") String vipScoreAdd,
+                              @RequestParam(value = "cSheetNo",required = false,defaultValue = "") String cSheetNo,
                                    HttpServletRequest request) {
         String appId=request.getHeader("requestid");
         logger.info("我是订单模块的" +appId);
-
+        try{
+            Double.parseDouble(vipScoreAdd);
+            if(cSheetNo.length()<0){
+                cSheetNo="";
+            }
+        }catch (Exception e){
+            vipScoreAdd="0";
+        }
         //获取无人售货机对应我们的数据库中的前台机器的编号
         if(!cMachineKey.trim().equals(MD5Encode(appKey+cMachineID,"UTF-8").trim().toUpperCase())){
             return new resultMsg(false, "[]", ResultError.MACHINE_SECRET_KEY.getValue(),  ResultError.MACHINE_SECRET_KEY.getDesc()).toString();
@@ -962,7 +1015,7 @@ public class ScanConntroller {
             JSONArray jsonArray1=JSONArray.fromObject(jsonObject.get("data"));
             List<POS_SaleSheetDetail> list=JSONArray.toList(jsonArray1,new POS_SaleSheetDetail(),new JsonConfig());
 
-            String result=CanService.insert_jiesuan_sure(list,commSheetNo,posstation,saleType);
+            String result=CanService.insert_jiesuan_sure(list,commSheetNo,posstation,saleType,vipNo,vipScoreAdd,cSheetNo);
             return result;
 
         } catch (Exception e) {

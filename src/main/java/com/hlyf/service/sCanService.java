@@ -30,6 +30,9 @@ public interface sCanService {
 
     List<cStoreGoods>  get_cStoreGoodsS( String cStoreNo,List<String> barcodeList);
 
+    //获取商品基本信息 单店
+    List<cStoreGoods>  get_cStoreGoodsDanDianS(String cStoreNo,List<String> barcodeList);
+
     List<tPloyOfSale>  get_tPloyOfSaleS(String cStoreNo,String cBarcode,int num);
 
     /**
@@ -77,7 +80,7 @@ public interface sCanService {
      * @return
      */
     String insert_jiesuan_sure(List<POS_SaleSheetDetail> list,
-                               commSheetNo commSheetNo,posstation posstation,String saleType);
+                               commSheetNo commSheetNo,posstation posstation,String saleType,String vipNo,String vipScoreAdd,String cSheetNoJD);
 
     String updateOrderTypeToJdS(Map map);
     String placing_ruturnorder(List<returntPublicSale_z> returntPublicSale_z, List<tPublicSaleDetail_z> tPublicSaleDetail_zlist);

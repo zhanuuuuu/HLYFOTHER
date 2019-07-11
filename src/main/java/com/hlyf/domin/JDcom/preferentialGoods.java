@@ -28,6 +28,16 @@ public class preferentialGoods {
 
     private String bWeight;
 
+    private String vipScoreAdd;
+
+    public String getVipScoreAdd() {
+        return vipScoreAdd;
+    }
+
+    public void setVipScoreAdd(String vipScoreAdd) {
+        this.vipScoreAdd = vipScoreAdd;
+    }
+
     public String getbWeight() {
         return bWeight;
     }
@@ -211,6 +221,7 @@ public class preferentialGoods {
                 ", iSeed='" + iSeed + '\'' +
                 ", bAuditing='" + bAuditing + '\'' +
                 ", bWeight='" + bWeight + '\'' +
+                ", vipScoreAdd='" + vipScoreAdd + '\'' +
                 '}';
     }
 }

@@ -54,7 +54,7 @@
 		fCurValue=CONVERT(DECIMAL(18,2),fCurValue),
 		fCurValue_Pos=CONVERT(DECIMAL(18,2),fCurValue_Pos),bVipPrice
 		FROM T_VIP
-		WHERE  cTel=#{mobileNo} OR cVipNo=#{mobileNo}
+		WHERE  cVipNo=#{mobileNo}
 		]]>
 	</select>
 
@@ -139,6 +139,37 @@
 		<![CDATA[ ) ]]>
 	</select>
 
+	<!--单点的-->
+	<select id="get_cStoreGoodsDanDian" resultType="com.hlyf.domin.cStoreGoods" >
+
+		SELECT cGoodsNo,cGoodsName,cBarcode,cStoreNo,cStoreName,cUnit,
+		cSpec,fNormalPrice,fVipPrice,fVipScore,fCKPrice,isWholePack=1,fVipScore,
+		youHuiAmount=0.0,amount=fNormalPrice,num=1,packRate=1 FROM t_Goods
+		WHERE 1=1
+		AND  <![CDATA[ ( ]]> cBarcode IN
+		<foreach collection="barcodeList" item="barcode" index="index"
+				 open="(" close=")" separator=",">
+			#{barcode}
+		</foreach>
+
+		OR cGoodsNo IN
+		<foreach collection="barcodeList" item="barcode" index="index"
+				 open="(" close=")" separator=",">
+			#{barcode}
+		</foreach>
+
+		OR  cGoodsNo IN
+		<![CDATA[ ( ]]>
+		SELECT cGoodsNo_parent FROM t_Goods_Union WHERE cBarcode IN
+		<foreach collection="barcodeList" item="barcode" index="index"
+				 open="(" close=")" separator=",">
+			#{barcode}
+		</foreach>
+		<![CDATA[ ) ]]>
+
+
+		<![CDATA[ ) ]]>
+	</select>
 
 	<select id="get_t_goodsKuCurQty_wei" resultType="com.hlyf.domin.t_goodsKuCurQty_wei" >
 		SELECT  cGoodsNo,EndQty,cStoreNo from t_goodsKuCurQty_wei
@@ -269,6 +300,18 @@
         		}
     	]]>
 	</select>
+
+	<select id="getVipScoreAdd"  resultType="com.hlyf.domin.VipAddScore" parameterType="java.lang.String">
+		<![CDATA[
+						{call p_getVipScoreAdd(
+									#{cSheetNo,mode=IN,jdbcType=VARCHAR},
+									#{fVipScoreRatio,mode=IN,jdbcType=VARCHAR},
+									#{callName,mode=IN,jdbcType=VARCHAR}
+									)
+						}
+				]]>
+	</select>
+
 
 	<insert id="insert_tThirdUsers_Log" parameterType="java.lang.String">
 		<![CDATA[
@@ -509,6 +552,7 @@
 												#{appId,mode=IN,jdbcType=VARCHAR},
 												#{iFlag,mode=OUT,jdbcType=INTEGER})}
 	</select>
+
 
 	<!--calAmountOrder  计算整单优惠信息-->
 	<select id="calAmountOrder" parameterType="map" statementType="CALLABLE">

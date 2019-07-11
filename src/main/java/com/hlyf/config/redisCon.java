@@ -18,6 +18,17 @@ public class redisCon {
     @Value("${cluster.isredistime}")
     private Integer isredistime;
 
+    @Value("${cluster.isdandian}")
+    private Boolean isdandian;
+
+    public Boolean getIsdandian() {
+        return isdandian;
+    }
+
+    public void setIsdandian(Boolean isdandian) {
+        this.isdandian = isdandian;
+    }
+
     public Boolean getIsredis() {
         return isredis;
     }

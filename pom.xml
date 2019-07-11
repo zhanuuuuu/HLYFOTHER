@@ -24,7 +24,6 @@
 		<project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
 		<java.version>1.8</java.version>
 		<java.home>G:/jdk8/Java/jdk1.8.0_101</java.home>
-
 		<spring-cloud.version>Finchley.RELEASE</spring-cloud.version>
 	</properties>
 

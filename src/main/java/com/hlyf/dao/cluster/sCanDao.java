@@ -21,6 +21,9 @@ public interface sCanDao {
     //获取商品基本信息
     List<cStoreGoods>  get_cStoreGoods(@Param("cStoreNo") String cStoreNo,@Param("barcodeList")List<String> barcodeList);
 
+    //获取商品基本信息 单店
+    List<cStoreGoods>  get_cStoreGoodsDanDian(@Param("cStoreNo") String cStoreNo,@Param("barcodeList")List<String> barcodeList);
+
     List<t_goodsKuCurQty_wei>  get_t_goodsKuCurQty_wei(@Param("cStoreNo") String cStoreNo,@Param("cGoodsNoList")List<String> cGoodsNoList);
     List<tPloyOfSale>  get_tPloyOfSale(@Param("cStoreNo") String cStoreNo,@Param("cBarcode") String cBarcode,@Param("num") int num);
     List<tThirdUsers>  get_tThirdUsers(@Param("appId") String appId);
@@ -139,5 +142,10 @@ public interface sCanDao {
 
     //根据单号珊瑚附表记录
     Integer delete_POS_SaleSheetDetail(Map map);
+
+    //查询函数的方法
+    VipAddScore getVipScoreAdd(@Param("cSheetNo")String cSheetNo,
+                               @Param("fVipScoreRatio")String fVipScoreRatio,
+                               @Param("callName")String callName);
 
 }

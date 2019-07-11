@@ -65,6 +65,11 @@ public class sCanServiceImp implements sCanService {
     }
 
     @Override
+    public List<cStoreGoods> get_cStoreGoodsDanDianS(String cStoreNo, List<String> barcodeList) {
+        return SCanDao.get_cStoreGoodsDanDian(cStoreNo, barcodeList);
+    }
+
+    @Override
     public List<tPloyOfSale> get_tPloyOfSaleS(String cStoreNo, String cBarcode, int num) {
         return SCanDao.get_tPloyOfSale(cStoreNo, cBarcode, num);
     }
@@ -282,7 +287,6 @@ public class sCanServiceImp implements sCanService {
                                    String fVipRate,String bDiscount,String tableName,posstation posstation,String sheetNotrue) {
         String result=new resultMsg(false,"[]", ResultOk.DATA_PASR_ERROR.getValue(),ResultOk.DATA_PASR_ERROR.getDesc()).toString();
 
-
         tPublicSale_JingDong_z tPublicSaleZ_JingDong=null;
 
         for(tPublicSale_JingDong_z tPublicSale_JingDongZ1:tPublicSale_JingDong_zlist){
@@ -295,9 +299,11 @@ public class sCanServiceImp implements sCanService {
         String appId=tPublicSaleZ_JingDong.getAppId();
 
         String vipNo=tPublicSaleZ_JingDong.getcVipNo();
-        //生成并设置单号
+        //生成并设置单号  防止单号重复
         tPublicSaleZ_JingDong.setcSheetNo(
-                new SimpleDateFormat("yyyyMMddHHmmss").format(new Date())+getRandom(10000,99999));
+                        posstation.getcStoreNo()+posstation.getPosid()
+                        +new SimpleDateFormat("yyyyMMddHHmmss").format(new Date())
+                        +getRandom(10000,99999));
         //主表单号
         String cSheeetNo=tPublicSaleZ_JingDong.getcSheetNo();
 
@@ -330,6 +336,14 @@ public class sCanServiceImp implements sCanService {
             Serialnumber++;
         }
         try{
+
+            SCanDao.p_saveSheetNo_Z_call(posstation.getcStoreNo().trim(),
+                    posstation.getPosid().trim(),
+                    new SimpleDateFormat("yyyy-MM-dd").format(new Date()),  //
+                    sheetNotrue,//单号
+                    ""+Serialnumber,
+                    posstation.getPos_Day().trim()+".dbo.p_saveSheetNo");
+
             /**
              * 开始做真正的插入数据库
              */
@@ -360,9 +374,14 @@ public class sCanServiceImp implements sCanService {
             //插入完临时表后做计算  计算完后做查询
             List<preferentialGoods> list =get_preferentialGoodsS(cStoreNo,posstation.getPosid(),cSheeetNo,
                     vipNo,String.valueOf(fVipRate),String.valueOf(bDiscount),(posstation.getPos_Day()+".dbo.p_ProcessPosSheet").trim());
+
+            VipAddScore vipAddScore=SCanDao.getVipScoreAdd(cSheeetNo,
+                    "100",posstation.getPos_Day()+".dbo.p_CountVipScore_Online");
+
             //这里重置单号返回信息
             for(preferentialGoods p:list){
                 p.setcSaleSheetno_time(sheetNotrue);
+                p.setVipScoreAdd(vipAddScore.getVipAddScore());
             }
             result=new resultMsg(true,listBean.getBeanJson(list), ResultOk.SUCCESS.getValue(),ResultOk.SUCCESS.getDesc()).toString();
         }catch (Exception e){
@@ -381,12 +400,16 @@ public class sCanServiceImp implements sCanService {
      * @return
      */
     @Override
-    public String insert_jiesuan_sure(List<POS_SaleSheetDetail> list, commSheetNo commSheetNo, posstation posstation,String saleType) {
+    public String insert_jiesuan_sure(List<POS_SaleSheetDetail> list, commSheetNo commSheetNo,
+                                      posstation posstation,String saleType,
+                                      String vipNo,String vipScoreAdd,String cSheetNoJD) {
         String result=new resultMsg(false,"[]", ResultOk.DATA_PASR_ERROR.getValue(),ResultOk.DATA_PASR_ERROR.getDesc()).toString();
 
         int i=1;
         Double sumMoney=0.0;
         String cWHno="";
+
+        String cSheetNo=cSheetNoJD.equals("") ? commSheetNo.getcSheetNo():cSheetNoJD;
         for(POS_SaleSheetDetail t:list){
             cWHno=t.getcWHno();
 
@@ -394,10 +417,10 @@ public class sCanServiceImp implements sCanService {
             t.setbHideQty("0");
             t.setiLineNo_Banci("1");
             t.setbSettle("0");
-            t.setcSaleSheetno(commSheetNo.getcSheetNo());//设置单号
+            t.setcSaleSheetno(cSheetNo);//设置单号
             t.setfVipScore("0");
             t.setbChecked("0");
-            t.setfVipScore_cur("0");
+            t.setfVipScore_cur(vipScoreAdd);
             //t.setbAuditing("0");
             t.setbVipRate("0");
             t.setiSeed(""+i);
@@ -420,7 +443,7 @@ public class sCanServiceImp implements sCanService {
             t.setcWorkerno("1");
             t.setcBanci_ID(new SimpleDateFormat("yyyy-MM-dd").format(new Date())+"_1");
             //t.setfAgio("0");
-            t.setcVipNo("");
+            t.setcVipNo(vipNo);
 
             sumMoney = sumMoney +Double.parseDouble(t.getfLastSettle());
             logger.info("我是单号 {}",t.getcSaleSheetno());
@@ -432,7 +455,7 @@ public class sCanServiceImp implements sCanService {
         List<pos_jiesuan> listpos_jiesuan=new ArrayList<pos_jiesuan>();
 
         pos_jiesuan posJiesuan=new pos_jiesuan(
-                commSheetNo.getcSheetNo(),  //设置单号 commSheetNo.getcSheetNo()
+                cSheetNo,  //设置单号 commSheetNo.getcSheetNo()
                 saleType,
                 String.valueOf(sumMoney),
                 "100",
@@ -501,16 +524,23 @@ public class sCanServiceImp implements sCanService {
                 }
                 if(c>0){
                     try{
-                        SCanDao.p_saveSheetNo_Z_call(posstation.getcStoreNo().trim(),
-                                posstation.getPosid().trim(),
-                                new SimpleDateFormat("yyyy-MM-dd").format(new Date()),  //
-                                commSheetNo.getcSheetNo(),//单号
-                                ""+i,
-                                posstation.getPos_Day().trim()+".dbo.p_saveSheetNo");
+                        if(!cSheetNoJD.equals("")){
+                            SCanDao.p_saveSheetNo_Z_call(posstation.getcStoreNo().trim(),
+                                    posstation.getPosid().trim(),
+                                    new SimpleDateFormat("yyyy-MM-dd").format(new Date()),  //
+                                    commSheetNo.getcSheetNo(),//单号
+                                    ""+i,
+                                    posstation.getPos_Day().trim()+".dbo.p_saveSheetNo");
+                        }
+
+                        //增加积分的
+                        if(!"".equals(vipNo)){
+                            this.update_VipS(posstation.getAppId(),posstation.getcMachineID(),vipNo,Double.parseDouble(vipScoreAdd));
+                        }
 
                         //返回我们数据库中的单号
                         JSONObject json=new JSONObject();
-                        json.put("cSheeetNo",commSheetNo.getcSheetNo());
+                        json.put("cSheeetNo",cSheetNo);
                         result=new resultMsg(true,json.toString(), ResultOk.SUCCESS.getValue(),ResultOk.SUCCESS.getDesc()).toString();
                     }catch (Exception e){
 
