@@ -1,0 +1,36 @@
+IF EXISTS (SELECT * FROM DBO.SYSOBJECTS WHERE ID = OBJECT_ID(N'[dbo].[p_calAmountOrder_z_true]') and OBJECTPROPERTY(ID, N'IsProcedure') = 1)
+BEGIN
+	DROP PROCEDURE [dbo].[p_calAmountOrder_z_true]
+
+END
+GO
+CREATE PROC [dbo].[p_calAmountOrder_z_true]
+ @cSheetNo varchar(80),   --单号
+ @appId varchar(80),      --第三方id
+ @tableName VARCHAR(80),     --表
+ @iFlag int OUT             --返回状态码   如果计算更改数据库相关字段值已经完成  返回1   无论返回多少  我都会去数据库重新取值 （该过程执行完毕以后）
+ AS
+BEGIN
+  SET @iFlag =1
+
+  DECLARE @SQL VARCHAR(8000)
+  SET @SQL ='INSERT INTO '+@tableName+'  (bWeight,cStoreNo,cPosID,cSaleSheetno_time,iSeed,cGoodsNo,cGoodsName,cBarcode,cOperatorno,cOperatorName,bAuditing,
+             fPrice,fVipPrice,fQuantity,fLastSettle,fLastSettle0,dSaleDate,
+             cSaleTime,dFinanceDate,cVipNo,fPrice_exe,bSettle,bVipPrice,fVipRate ) '
+             +' SELECT bWeight,cStoreNo,machineIp,cSheetNo,iSeed,cGoodsNo,cGoodsName,cBarcode,appId,appId,bAuditing,
+				  fNormalPrice,fNormalPrice,fQuantity,discountMoney AS fLastSettle,discountMoney AS fLastSettle0,convert(varchar(10),getdate(),23),
+				  cSaleTime=convert(varchar(10),getdate(),108),convert(varchar(10),getdate(),23),cVipNo,
+				  fNormalPrice,bSettle=0,bVipPrice=0,100  FROM tPublicSaleDetail_JingDong_z WHERE cSheetNo='+''''+@cSheetNo+''''
+
+
+  PRINT(@SQL)
+  EXEC(@SQL)
+  --DELETE  tPublicSale_JingDong_z
+  --DELETE  tPublicSaleDetail_JingDong_z
+
+  SET 	@iFlag = @@ROWCOUNT
+  RETURN @iFlag
+END
+
+
+SELECT * FROM tPublicSaleDetail_JingDong_z

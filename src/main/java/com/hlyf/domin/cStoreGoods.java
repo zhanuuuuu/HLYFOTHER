@@ -29,7 +29,6 @@ public class cStoreGoods implements Serializable{
     private String cSpec;
     private Double fNormalPrice;
     private Double fVipPrice;
-
     private Double fCKPrice;
     private Integer isWholePack;
     private Double youHuiAmount;

@@ -557,7 +557,7 @@
 	<!--calAmountOrder  计算整单优惠信息-->
 	<select id="calAmountOrder" parameterType="map" statementType="CALLABLE">
 		{#{iFlag,mode=OUT,jdbcType=INTEGER} =
-		call p_calAmountOrder_z(#{cSheetNo,mode=IN,jdbcType=VARCHAR},
+		call p_calAmountOrder_z_true(#{cSheetNo,mode=IN,jdbcType=VARCHAR},
 		#{appId,mode=IN,jdbcType=VARCHAR},
 		#{tableName,mode=IN,jdbcType=VARCHAR},
 		#{iFlag,mode=OUT,jdbcType=INTEGER})}

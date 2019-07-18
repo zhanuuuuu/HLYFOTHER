@@ -1,0 +1,35 @@
+
+测试地址:http://39.100.119.188 端口 15689
+（这是目前测试用的）
+
+appid:20190716194721
+appsecret:dfbaa32a440d167214f067feba8b817b
+
+
+每个门店对应的机器的cStoreNo,cMachineID,cMachineKey（不同门店中不同的机器上传的不一样,不要混淆了  ）
+
+测试机器
+cStoreNo：5208
+cMachineID：ABCDEFJHIJKM
+cMachineKey：52BDFB0C87CBC6A09A41786189F5B3FC
+
+
+
+INSERT INTO tThirdUsers (appId,appSercet,userName,beizhu)
+VALUES('20190716194721','dfbaa32a440d167214f067feba8b817b','京东','京东测试环境乐家优鲜连锁')
+
+INSERT INTO posstation(appId,posname,posid,cWHno,Pos_Day,cStoreNo,cMachineID,cMachineKey,cStoreName,appName) VALUES
+('20190716194721', 'ZZ', '99', '5208', 'posstation5208', '5208', 'ABCDEFJHIJKM', '52BDFB0C87CBC6A09A41786189F5B3FC', '乐家优鲜-拥军路店测试', '京东无人售货测试')
+
+
+INSERT INTO posstation(appId,posname,posid,cWHno,Pos_Day,cStoreNo,cMachineID,cMachineKey,cStoreName,appName) VALUES
+('20190703164349', 'ZZ', '81', '5208', 'posstation5208', '5208', 'ABCDEFGHIJKA', 'F26276FB2B9AA94B1C58F0F9CFAC9EDB', '乐家优鲜-拥军路店', '京东无人售货')
+
+INSERT INTO posstation(appId,posname,posid,cWHno,Pos_Day,cStoreNo,cMachineID,cMachineKey,cStoreName,appName) VALUES
+('20190703164349', 'ZZ', '82', '5208', 'posstation5208', '5208', 'ABCDEFGHIJKB', '20B428DE802C237C7EFEB299E9359608', '乐家优鲜-拥军路店', '京东无人售货')
+
+INSERT INTO posstation(appId,posname,posid,cWHno,Pos_Day,cStoreNo,cMachineID,cMachineKey,cStoreName,appName) VALUES
+('20190703164349', 'ZZ', '83', '5208', 'posstation5208', '5208', 'ABCDEFGHIJKC', 'FBEA26C050A7F865CC5FCC58258299FB', '乐家优鲜-拥军路店', '京东无人售货')
+
+INSERT INTO posstation(appId,posname,posid,cWHno,Pos_Day,cStoreNo,cMachineID,cMachineKey,cStoreName,appName) VALUES
+('20190703164349', 'ZZ', '84', '5208', 'posstation5208', '5208', 'ABCDEFGHIJKD', '434D65CE7D3BE1087D3274EC8A6674A7', '乐家优鲜-拥军路店', '京东无人售货')
