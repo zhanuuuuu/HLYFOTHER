@@ -10,6 +10,8 @@ import com.hlyf.minsheng.RopUtils;
 import com.hlyf.result.ResultOk;
 import com.hlyf.result.resultMsg;
 import com.hlyf.service.sCanService;
+import com.hlyf.tool.DB;
+import com.hlyf.tool.GetConnection;
 import com.hlyf.tool.String_Tool;
 import com.hlyf.tool.listBean;
 import net.sf.json.JSONArray;
@@ -24,6 +26,9 @@ import org.springframework.transaction.annotation.Isolation;
 import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.sql.CallableStatement;
+import java.sql.Connection;
+import java.sql.SQLException;
 import java.text.SimpleDateFormat;
 import java.util.*;
 
@@ -276,12 +281,6 @@ public class sCanServiceImp implements sCanService {
      * @param posstation
      * @return
      */
-    @Override
-    @Transactional(propagation = Propagation.REQUIRED,
-            isolation = Isolation.DEFAULT,
-            timeout=36000,
-            rollbackFor={RuntimeException.class, Exception.class},
-            readOnly = false)
     public String getPreGoodsInfoS(List<tPublicSale_JingDong_z> tPublicSale_JingDong_zlist,
                                    List<tPublicSaleDetail_JingDong_z> tPublicSaleDetail_JingDong_zlist,
                                    String fVipRate,String bDiscount,String tableName,posstation posstation,String sheetNotrue) {
@@ -372,15 +371,43 @@ public class sCanServiceImp implements sCanService {
             logger.error("单号   "+cSheeetNo);
 
             //插入完临时表后做计算  计算完后做查询
-            List<preferentialGoods> list =get_preferentialGoodsS(cStoreNo,posstation.getPosid(),cSheeetNo,
-                    vipNo,String.valueOf(fVipRate),String.valueOf(bDiscount),(posstation.getPos_Day()+".dbo.p_ProcessPosSheet").trim());
-
+            Map map1=new HashMap();
+            map1.put("callName",(posstation.getPos_Day()+".dbo.p_ProcessPosSheet").trim());
+            map1.put("cStoreNo", cStoreNo);
+            map1.put("cPosID",posstation.getPosid());
+            map1.put("cSaleSheetNo", cSheeetNo);
+            map1.put("cVipNo",vipNo);
+            map1.put("fVipRate", fVipRate);
+            map1.put("bDiscount", bDiscount);
+//            List<preferentialGoods> list =get_preferentialGoodsS(cStoreNo,posstation.getPosid(),cSheeetNo,
+//                    vipNo,String.valueOf(fVipRate),String.valueOf(bDiscount),(posstation.getPos_Day()+".dbo.p_ProcessPosSheet").trim());
+            //强制改变事物
+            Connection conn= GetConnection.getConn(posstation.getPos_Day());
+            CallableStatement c = null;
+            try {
+                c = conn.prepareCall("{call p_ProcessPosSheet (?,?,?,?,?,?)}");
+                c.setString(1, cStoreNo);
+                c.setString(2, posstation.getPosid());
+                c.setString(3, cSheeetNo);
+                c.setString(4, vipNo);
+                c.setString(5, fVipRate);
+                c.setString(6, bDiscount);
+                c.execute();
+            } catch (SQLException e) {
+                e.printStackTrace();
+                logger.info("获取整单优惠信息失败 Connection ：{} ",e.getMessage());
+            }finally {
+                DB.closeCallState(c);
+                DB.closeConn(conn);
+            }
+            List<preferentialGoods> list =SCanDao.get_preferentialGoodsTwo(map1);
             VipAddScore vipAddScore=SCanDao.getVipScoreAdd(cSheeetNo,
-                    "100",posstation.getPos_Day()+".dbo.p_CountVipScore_Online");
-
+                        "100",posstation.getPos_Day()+".dbo.p_CountVipScore_Online");
+            //list =SCanDao.get_preferentialGoodsTwo(map1);
             //这里重置单号返回信息
             for(preferentialGoods p:list){
-                p.setcSaleSheetno_time(sheetNotrue);
+                //p.setcSaleSheetno_time(sheetNotrue);
+                p.setCSaleSheetno_time(sheetNotrue);
                 p.setVipScoreAdd(vipAddScore.getVipAddScore());
             }
             result=new resultMsg(true,listBean.getBeanJson(list), ResultOk.SUCCESS.getValue(),ResultOk.SUCCESS.getDesc()).toString();
@@ -410,6 +437,9 @@ public class sCanServiceImp implements sCanService {
         String cWHno="";
 
         String cSheetNo=cSheetNoJD.equals("") ? commSheetNo.getcSheetNo():cSheetNoJD;
+
+        //TODO 这里可以写个方法  如果存在直接返回
+
         for(POS_SaleSheetDetail t:list){
             cWHno=t.getcWHno();
 

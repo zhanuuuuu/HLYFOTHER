@@ -208,12 +208,12 @@ BEGIN
 
   DECLARE @SQL VARCHAR(8000)
   SET @SQL ='INSERT INTO '+@tableName+'  (bWeight,cStoreNo,cPosID,cSaleSheetno_time,iSeed,cGoodsNo,cGoodsName,cBarcode,cOperatorno,cOperatorName,bAuditing,
-             fPrice,fVipPrice,fQuantity,fLastSettle,fLastSettle0,dSaleDate,
-             cSaleTime,dFinanceDate,cVipNo,fPrice_exe,bSettle,bVipPrice,fVipRate ) '
-             +' SELECT bWeight,cStoreNo,machineIp,cSheetNo,iSeed,cGoodsNo,cGoodsName,cBarcode,appId,appId,bAuditing,
-				  fNormalPrice,fNormalPrice,fQuantity,fNormalPrice*fQuantity AS fLastSettle,fNormalPrice*fQuantity AS fLastSettle0,convert(varchar(10),getdate(),23),
-				  cSaleTime=convert(varchar(10),getdate(),108),convert(varchar(10),getdate(),23),cVipNo,
-				  fNormalPrice,bSettle=0,bVipPrice=0,100  FROM tPublicSaleDetail_JingDong_z WHERE cSheetNo='+''''+@cSheetNo+''''
+                         fPrice,fVipPrice,fQuantity,fLastSettle,fLastSettle0,dSaleDate,
+                         cSaleTime,dFinanceDate,cVipNo,fPrice_exe,bSettle,bVipPrice,fVipRate ) '
+                         +' SELECT bWeight,cStoreNo,machineIp,cSheetNo,iSeed,cGoodsNo,cGoodsName,cBarcode,appId,appId,bAuditing,
+            				  fNormalPrice,fNormalPrice,fQuantity,discountMoney AS fLastSettle,discountMoney AS fLastSettle0,convert(varchar(10),getdate(),23),
+            				  cSaleTime=convert(varchar(10),getdate(),108),convert(varchar(10),getdate(),23),cVipNo,
+            				  fNormalPrice,bSettle=0,bVipPrice=0,100  FROM tPublicSaleDetail_JingDong_z WHERE cSheetNo='+''''+@cSheetNo+''''
 
 
   PRINT(@SQL)

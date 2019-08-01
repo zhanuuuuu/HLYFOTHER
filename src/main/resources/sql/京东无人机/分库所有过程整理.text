@@ -1,0 +1,47 @@
+
+GO
+/****** Object:  StoredProcedure [dbo].[p_getPos_SerialNoSheetNo]    Script Date: 07/26/2019 15:51:14 ******/
+SET ANSI_NULLS ON
+GO
+SET QUOTED_IDENTIFIER ON
+GO
+ALTER PROC [dbo].[p_getPos_SerialNoSheetNo]
+@cStoreNo VARCHAR(32),
+@cPosID VARCHAR(32),
+@Zdriqi VARCHAR(32)
+AS
+BEGIN
+  DECLARE @cSheetNo VARCHAR(32)
+  DECLARE @rightNum INT
+
+  IF exists(select SerNo from pos_SerialNo where cStoreNo=@cStoreNo and cPosID=@cPosID and Zdriqi=@Zdriqi )
+  BEGIN
+		--取值
+		SET @cSheetNo=(select SerNo from pos_SerialNo where cStoreNo=@cStoreNo and cPosID=@cPosID and Zdriqi=@Zdriqi)
+		PRINT(@cSheetNo)
+		--截取后6位'01 20 19 09 11 000001'
+		SET @cSheetNo=(select substring(@cSheetNo,11,6))
+		PRINT(@cSheetNo)
+		--转换int 计算 并 加 1
+		SET @rightNum=(SELECT CAST(@cSheetNo AS INT)+1)
+		PRINT(@rightNum)
+		--转换varchar
+		SET @cSheetNo=(select CAST(@rightNum AS VARCHAR(32)))
+		PRINT(@cSheetNo)
+		--不足4位前面补0
+		WHILE(LEN(@cSheetNo) <6)
+		BEGIN
+			SET @cSheetNo='0'+@cSheetNo
+		END
+		--最后计算出结果
+		SELECT cSheetNo=@cPosID+REPLACE(@Zdriqi,'-','')+@cSheetNo
+
+  END
+  ELSE
+  BEGIN
+     -- 直接返回一个4位的单号
+    SELECT cSheetNo=@cPosID+REPLACE(@Zdriqi,'-','')+'000001'
+
+  END
+END
+

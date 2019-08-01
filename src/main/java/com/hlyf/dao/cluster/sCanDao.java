@@ -107,6 +107,7 @@ public interface sCanDao {
                                                   @Param("cSheetNo")String cSheetNo,@Param("vipNo")String vipNo,
                                                   @Param("fVipScoreRatio")String fVipScoreRatio,@Param("bDiscount")String bDiscount,
                                                   @Param("callName")String callName);
+    List<preferentialGoods>  get_preferentialGoodsTwo(Map map);
     //保存单号的
 //    @cStoreNo VARCHAR(32),
 //    @cPosID VARCHAR(32),

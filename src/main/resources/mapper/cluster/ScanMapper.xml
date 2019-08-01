@@ -88,6 +88,21 @@
 				]]>
 	</select>
 
+	<select id="get_preferentialGoodsTwo" parameterType="Map" statementType="STATEMENT" resultType="com.hlyf.domin.JDcom.preferentialGoods" >
+
+
+		{call ${callName} (
+			'${cStoreNo}',
+			'${cPosID}',
+			'${cSaleSheetNo}',
+			'${cVipNo}',
+			${fVipRate},
+			${bDiscount}
+		)
+		}
+
+	</select>
+
 
 
 	<!--得到会员信息  -->
@@ -492,8 +507,6 @@
 				posstation101.dbo.POS_SaleSheetDetail
 			</otherwise>
 		</choose>
-
-
 		(
 		cSaleSheetno, iSeed, cGoodsNo, cGoodsName, cBarCode,
 		cOperatorno, cOperatorName, cVipCardno,bAuditing, bSettle,

@@ -882,7 +882,7 @@ public class ScanConntroller {
     @RequestMapping(value = "/api/getPreGoodsInfo", method = RequestMethod.POST)
     @ResponseBody
     public  String getPreGoodsInfo(@RequestParam(value = "data",required = true) String data,
-                                   @RequestParam(value = "vipNo",required = false,defaultValue = "999999999999999999") String vipNo,
+                                   @RequestParam(value = "vipNo",required = false,defaultValue = "") String vipNo,
                                    @RequestParam(value = "fVipRate",required = false,defaultValue = "100") String fVipRate,
                                    @RequestParam(value = "bDiscount",required = false,defaultValue = "0") String bDiscount,
                                    @RequestParam(value = "cStoreNo",required = true) String cStoreNo,
@@ -892,6 +892,7 @@ public class ScanConntroller {
         String appId=request.getHeader("requestid");
 
         logger.info("我是订单模块的" +appId);
+        logger.info("我是会员卡号 : " +vipNo);
         //获取无人售货机对应我们的数据库中的前台机器的编号
         if(!cMachineKey.trim().equals(MD5Encode(appKey+cMachineID,"UTF-8").trim().toUpperCase())){
             return new resultMsg(false, "[]", ResultError.MACHINE_SECRET_KEY.getValue(),  ResultError.MACHINE_SECRET_KEY.getDesc()).toString();
@@ -985,6 +986,7 @@ public class ScanConntroller {
         }catch (Exception e){
             vipScoreAdd="0";
         }
+
         //获取无人售货机对应我们的数据库中的前台机器的编号
         if(!cMachineKey.trim().equals(MD5Encode(appKey+cMachineID,"UTF-8").trim().toUpperCase())){
             return new resultMsg(false, "[]", ResultError.MACHINE_SECRET_KEY.getValue(),  ResultError.MACHINE_SECRET_KEY.getDesc()).toString();
@@ -1014,7 +1016,6 @@ public class ScanConntroller {
             JSONObject jsonObject=JSONObject.fromObject(jsonStr);
             JSONArray jsonArray1=JSONArray.fromObject(jsonObject.get("data"));
             List<POS_SaleSheetDetail> list=JSONArray.toList(jsonArray1,new POS_SaleSheetDetail(),new JsonConfig());
-
             String result=CanService.insert_jiesuan_sure(list,commSheetNo,posstation,saleType,vipNo,vipScoreAdd,cSheetNo);
             return result;
 

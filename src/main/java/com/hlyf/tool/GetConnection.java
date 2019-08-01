@@ -31,6 +31,17 @@ public class GetConnection {
 		return null;
 	}
 
+	public static Connection getConn(String name) {
+		try {
+			Connection conn = DB.getConnection(new ReadConfig().getprop().getProperty("IP"),name); // 初始化加盟商户的数据库链接
+			return conn;
+		} catch (Exception e) {
+			logger.error("连接数据库失败了 ");
+			e.printStackTrace();
+		}
+		return null;
+	}
+
 	public static Connection getPosstationConn(String ip) {
 		try {
 			Connection conn = DB.getConnection(ip, "posstation"); //

@@ -1,7 +1,10 @@
 package com.hlyf.tool;
 
 
-import net.sf.json.JSONObject;
+//import net.sf.json.JSONObject;
+
+import com.alibaba.fastjson.JSONObject;
+import com.alibaba.fastjson.serializer.SerializerFeature;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -17,13 +20,19 @@ public class listBean {
     //通用方法    list map 转换成json对象
     @SuppressWarnings("unchecked")
     public static String getBeanJson(List list){
-        List<Map<String, Object>> list1=getKeysAndValues(list);
-        List list2 =new ArrayList();
-        for(Map<String, Object> map:list1){
-            JSONObject jsonObject = JSONObject.fromObject(map);
-            list2.add(jsonObject);
-        }
-        return list2.toString();
+//        List<Map<String, Object>> list1=getKeysAndValues(list);
+//        List list2 =new ArrayList();
+//        for(Map<String, Object> map:list1){
+//            //JSONObject jsonObject = JSONObject.fromObject(map);
+//
+//            list2.add(jsonObject);
+//        }
+//        return list2.toString();
+
+        return JSONObject.toJSONString(list, SerializerFeature.WriteNullListAsEmpty,
+                SerializerFeature.WriteNullStringAsEmpty,
+                SerializerFeature.WriteNullNumberAsZero,
+                SerializerFeature.WriteMapNullValue);
     }
 
 
