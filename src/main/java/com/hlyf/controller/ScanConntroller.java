@@ -11,6 +11,7 @@ import com.hlyf.result.resultMsg;
 import com.hlyf.service.sCanService;
 import com.hlyf.service.userService;
 import com.hlyf.tool.JWTUtil;
+import com.hlyf.tool.String_Tool;
 import com.hlyf.tool.ThreeDESUtil;
 import com.hlyf.tool.listBean;
 import net.sf.json.JSONArray;
@@ -428,6 +429,9 @@ public class ScanConntroller {
             }
 
             List<posConfig> list=CanService.selectAllS((posstation.getPos_Day()+".dbo.Pos_Config").trim(),condition);
+            for(posConfig t:list){
+                t.setiRatio(String_Tool.removeAmtLastZero(t.getiRatio()));
+            }
             String result="";
             if(list!=null && !list.isEmpty()){
                 try{

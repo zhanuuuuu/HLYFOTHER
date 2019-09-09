@@ -44,16 +44,24 @@ public class IndexFilter2 implements Filter {
     @Override
     public void doFilter(ServletRequest servletRequest, ServletResponse servletResponse, FilterChain filterChain) throws IOException, ServletException {
 
+        //京东对接需要用这个方法 千禧基本信息也需要用这个方法的
+        //CommFilter((HttpServletRequest) servletRequest, (HttpServletResponse) servletResponse, filterChain, redison, SCanDao);
+
+        //下面不拦截任何请求
+        filterChain.doFilter((HttpServletRequest) servletRequest, (HttpServletResponse) servletResponse);
+    }
+
+    private static void CommFilter(HttpServletRequest servletRequest, HttpServletResponse servletResponse, FilterChain filterChain, redisCon redison, sCanDao SCanDao) throws IOException, ServletException {
         HttpServletRequest request =
-                (HttpServletRequest) servletRequest;
+                servletRequest;
         HttpServletResponse response =
-                (HttpServletResponse) servletResponse;
+                servletResponse;
         response.setContentType("text/html");
         response.setContentType("text/html;charset=UTF-8");
         response.setHeader("content-type", "text/html;charset=UTF-8");
 
 
-        String uri=((HttpServletRequest)servletRequest).getRequestURI();
+        String uri= servletRequest.getRequestURI();
 
         if(redison.getRedis()) {
             Enumeration<String> e = request.getParameterNames();
@@ -109,6 +117,7 @@ public class IndexFilter2 implements Filter {
         filterChain.doFilter(request, response);
         //logger.info("2 out filter addr="+uri);
     }
+
     @Override
     public void destroy() {
 

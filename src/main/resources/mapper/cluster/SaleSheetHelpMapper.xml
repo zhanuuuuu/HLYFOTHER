@@ -1,0 +1,88 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.hlyf.dao.cluster.QxDao">
+  <resultMap id="BaseResultMap" type="com.hlyf.domin.Qx.SaleSheetHelp">
+    <id column="dSaleDate" jdbcType="TIMESTAMP" property="dSaleDate" />
+    <id column="cSaleSheetno" jdbcType="VARCHAR" property="cSaleSheetno" />
+    <id column="iSeed" jdbcType="INTEGER" property="iSeed" />
+    <id column="cStoreNo" jdbcType="VARCHAR" property="cStoreNo" />
+    <result column="cGoodsNo" jdbcType="VARCHAR" property="cGoodsNo" />
+    <result column="cOperatorno" jdbcType="VARCHAR" property="cOperatorno" />
+    <result column="cOperatorName" jdbcType="VARCHAR" property="cOperatorName" />
+    <result column="bAuditing" jdbcType="BIT" property="bAuditing" />
+    <result column="fVipScore" jdbcType="DECIMAL" property="fVipScore" />
+    <result column="fPrice" jdbcType="DECIMAL" property="fPrice" />
+    <result column="fVipPrice" jdbcType="DECIMAL" property="fVipPrice" />
+    <result column="fQuantity" jdbcType="DECIMAL" property="fQuantity" />
+    <result column="fLastSettle" jdbcType="DECIMAL" property="fLastSettle" />
+    <result column="cSaleTime" jdbcType="VARCHAR" property="cSaleTime" />
+    <result column="cVipNo" jdbcType="VARCHAR" property="cVipNo" />
+    <result column="cWHno" jdbcType="VARCHAR" property="cWHno" />
+    <result column="cSheetNo" jdbcType="VARCHAR" property="cSheetNo" />
+    <!--<result column="dDatetime" jdbcType="TIMESTAMP" property="dDatetime" />-->
+  </resultMap>
+  <delete id="deleteByPrimaryKey" parameterType="map">
+    delete from t_SaleSheetHelp
+    where dSaleDate = #{dSaleDate,jdbcType=TIMESTAMP}
+      and cSaleSheetno = #{cSaleSheetno,jdbcType=VARCHAR}
+      and iSeed = #{iSeed,jdbcType=INTEGER}
+      and cStoreNo = #{cStoreNo,jdbcType=VARCHAR}
+  </delete>
+
+
+  <delete id="deleteSaleSheetHelp" parameterType="map">
+    delete from t_SaleSheetHelp
+    where cSaleSheetno = #{cSaleSheetno,jdbcType=VARCHAR}
+  </delete>
+
+  <insert id="insert" parameterType="com.hlyf.domin.Qx.SaleSheetHelp">
+    insert into t_SaleSheetHelp (dSaleDate, cSaleSheetno, iSeed, 
+      cStoreNo, cGoodsNo, cOperatorno, 
+      cOperatorName, bAuditing, fVipScore, 
+      fPrice, fVipPrice, fQuantity, 
+      fLastSettle, cSaleTime, cVipNo, 
+      cWHno, cSheetNo
+      )
+    values (#{dSaleDate,jdbcType=TIMESTAMP}, #{cSaleSheetno,jdbcType=VARCHAR}, #{iSeed,jdbcType=INTEGER}, 
+      #{cStoreNo,jdbcType=VARCHAR}, #{cGoodsNo,jdbcType=VARCHAR}, #{cOperatorno,jdbcType=VARCHAR}, 
+      #{cOperatorName,jdbcType=VARCHAR}, #{bAuditing,jdbcType=BIT}, #{fVipScore,jdbcType=DECIMAL}, 
+      #{fPrice,jdbcType=DECIMAL}, #{fVipPrice,jdbcType=DECIMAL}, #{fQuantity,jdbcType=DECIMAL}, 
+      #{fLastSettle,jdbcType=DECIMAL}, #{cSaleTime,jdbcType=VARCHAR}, #{cVipNo,jdbcType=VARCHAR}, 
+      #{cWHno,jdbcType=VARCHAR}, #{cSheetNo,jdbcType=VARCHAR}
+      )
+  </insert>
+  <update id="updateByPrimaryKey" parameterType="com.hlyf.domin.Qx.SaleSheetHelp">
+    update t_SaleSheetHelp
+    set cGoodsNo = #{cGoodsNo,jdbcType=VARCHAR},
+      cOperatorno = #{cOperatorno,jdbcType=VARCHAR},
+      cOperatorName = #{cOperatorName,jdbcType=VARCHAR},
+      bAuditing = #{bAuditing,jdbcType=BIT},
+      fVipScore = #{fVipScore,jdbcType=DECIMAL},
+      fPrice = #{fPrice,jdbcType=DECIMAL},
+      fVipPrice = #{fVipPrice,jdbcType=DECIMAL},
+      fQuantity = #{fQuantity,jdbcType=DECIMAL},
+      fLastSettle = #{fLastSettle,jdbcType=DECIMAL},
+      cSaleTime = #{cSaleTime,jdbcType=VARCHAR},
+      cVipNo = #{cVipNo,jdbcType=VARCHAR},
+      cWHno = #{cWHno,jdbcType=VARCHAR},
+      cSheetNo = #{cSheetNo,jdbcType=VARCHAR},
+      dDatetime = #{dDatetime,jdbcType=TIMESTAMP}
+    where dSaleDate = #{dSaleDate,jdbcType=TIMESTAMP}
+      and cSaleSheetno = #{cSaleSheetno,jdbcType=VARCHAR}
+      and iSeed = #{iSeed,jdbcType=INTEGER}
+      and cStoreNo = #{cStoreNo,jdbcType=VARCHAR}
+  </update>
+  <select id="selectByPrimaryKey" parameterType="map" resultMap="BaseResultMap">
+    select TOP 1 dSaleDate, cSaleSheetno, iSeed, cStoreNo, cGoodsNo, cOperatorno, cOperatorName,
+    bAuditing, fVipScore, fPrice, fVipPrice, fQuantity, fLastSettle, cSaleTime, cVipNo, 
+    cWHno, cSheetNo, dDatetime
+    from t_SaleSheetHelp
+    where  cSaleSheetno = #{cSaleSheetno,jdbcType=VARCHAR}
+  </select>
+  <select id="selectAll" resultMap="BaseResultMap">
+    select dSaleDate, cSaleSheetno, iSeed, cStoreNo, cGoodsNo, cOperatorno, cOperatorName, 
+    bAuditing, fVipScore, fPrice, fVipPrice, fQuantity, fLastSettle, cSaleTime, cVipNo, 
+    cWHno, cSheetNo, dDatetime
+    from t_SaleSheetHelp
+  </select>
+</mapper>

@@ -39,7 +39,7 @@ import static com.hlyf.tool.String_Tool.getRandom;
  * Created by Administrator on 2018-11-13.
  */
 @Service
-@Transactional
+//@Transactional
 public class sCanServiceImp implements sCanService {
     private static final Logger logger = LoggerFactory.getLogger(sCanServiceImp.class);
 
@@ -382,24 +382,24 @@ public class sCanServiceImp implements sCanService {
 //            List<preferentialGoods> list =get_preferentialGoodsS(cStoreNo,posstation.getPosid(),cSheeetNo,
 //                    vipNo,String.valueOf(fVipRate),String.valueOf(bDiscount),(posstation.getPos_Day()+".dbo.p_ProcessPosSheet").trim());
             //强制改变事物
-            Connection conn= GetConnection.getConn(posstation.getPos_Day());
-            CallableStatement c = null;
-            try {
-                c = conn.prepareCall("{call p_ProcessPosSheet (?,?,?,?,?,?)}");
-                c.setString(1, cStoreNo);
-                c.setString(2, posstation.getPosid());
-                c.setString(3, cSheeetNo);
-                c.setString(4, vipNo);
-                c.setString(5, fVipRate);
-                c.setString(6, bDiscount);
-                c.execute();
-            } catch (SQLException e) {
-                e.printStackTrace();
-                logger.info("获取整单优惠信息失败 Connection ：{} ",e.getMessage());
-            }finally {
-                DB.closeCallState(c);
-                DB.closeConn(conn);
-            }
+//            Connection conn= GetConnection.getConn(posstation.getPos_Day());
+//            CallableStatement c = null;
+//            try {
+//                c = conn.prepareCall("{call p_ProcessPosSheet (?,?,?,?,?,?)}");
+//                c.setString(1, cStoreNo);
+//                c.setString(2, posstation.getPosid());
+//                c.setString(3, cSheeetNo);
+//                c.setString(4, vipNo);
+//                c.setString(5, fVipRate);
+//                c.setString(6, bDiscount);
+//                c.execute();
+//            } catch (SQLException e) {
+//                e.printStackTrace();
+//                logger.info("获取整单优惠信息失败 Connection ：{} ",e.getMessage());
+//            }finally {
+//                DB.closeCallState(c);
+//                DB.closeConn(conn);
+//            }
             List<preferentialGoods> list =SCanDao.get_preferentialGoodsTwo(map1);
             VipAddScore vipAddScore=SCanDao.getVipScoreAdd(cSheeetNo,
                         "100",posstation.getPos_Day()+".dbo.p_CountVipScore_Online");
@@ -562,7 +562,6 @@ public class sCanServiceImp implements sCanService {
                                     ""+i,
                                     posstation.getPos_Day().trim()+".dbo.p_saveSheetNo");
                         }
-
                         //增加积分的
                         if(!"".equals(vipNo)){
                             this.update_VipS(posstation.getAppId(),posstation.getcMachineID(),vipNo,Double.parseDouble(vipScoreAdd));

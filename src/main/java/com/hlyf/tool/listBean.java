@@ -20,6 +20,7 @@ public class listBean {
     //通用方法    list map 转换成json对象
     @SuppressWarnings("unchecked")
     public static String getBeanJson(List list){
+        //TODO  我的注释的这个方法不要删除了  出了问题很严重
 //        List<Map<String, Object>> list1=getKeysAndValues(list);
 //        List list2 =new ArrayList();
 //        for(Map<String, Object> map:list1){

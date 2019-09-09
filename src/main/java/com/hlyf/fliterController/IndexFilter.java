@@ -42,19 +42,25 @@ public class IndexFilter implements Filter {
 
     @Override
     public void doFilter(ServletRequest servletRequest, ServletResponse servletResponse, FilterChain filterChain) throws IOException, ServletException {
+        //京东对接需要用这个方法 千禧基本信息也需要用这个方法的
+        //CommFilter((HttpServletRequest) servletRequest, (HttpServletResponse) servletResponse, filterChain);
+        //下面这个方法是不拦截请求
+        filterChain.doFilter((HttpServletRequest) servletRequest, (HttpServletResponse) servletResponse);
+    }
 
+    private void CommFilter(HttpServletRequest servletRequest, HttpServletResponse servletResponse, FilterChain filterChain) throws IOException, ServletException {
         HttpServletRequest request =
-                (HttpServletRequest) servletRequest;
+                servletRequest;
         HttpServletResponse response =
-                (HttpServletResponse) servletResponse;
+                servletResponse;
         response.setContentType("text/html");
-		response.setContentType("text/html;charset=UTF-8");
-		response.setHeader("content-type", "text/html;charset=UTF-8");
-       // ServletRequest requestWrapper = new BodyReaderHttpServletRequestWrapper(request);
+        response.setContentType("text/html;charset=UTF-8");
+        response.setHeader("content-type", "text/html;charset=UTF-8");
+        // ServletRequest requestWrapper = new BodyReaderHttpServletRequestWrapper(request);
         System.out.println("IsRedis-------------------------------------------="+redison.getRedis());
 
         System.out.println("IsRedis---getEncrypt   ------------------------------="+redison.getEncrypt());
-        String uri=((HttpServletRequest)servletRequest).getRequestURI();
+        String uri= servletRequest.getRequestURI();
 
         Enumeration<String> e = request.getParameterNames();
         String a = "";

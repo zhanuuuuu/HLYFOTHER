@@ -87,81 +87,76 @@ public class MyStaticTask {
     public void reportCurrentByCron(){
         System.out.println ("Scheduling Tasks Examples By Cron: The time is now " + dateFormat ().format (new Date ()));
     }
-    //十分钟执行一次
+    //十分钟执行一次   这个方法是写个明生银行的
     @Scheduled(cron = "0 */10 *  * * * ")
     public void cxGetData(){
-//         获取开始的时间
-//        t_MingShengTime t_mingShengTime=mingSheng.get_t_MingShengTime("");
-//        logger.error("我是定时器 0 */5 *  * * *  测试的  的 哈哈  "
-//        +(new SimpleDateFormat("yyyy-MM-dd HH:mm:ss").format(new Date()))+"  "+t_mingShengTime.toString());
-        String endTime=String_Tool.DataBaseTime();
-        Calendar c = Calendar.getInstance();
-        c.setTime(new Date());
-        try {
-            c.setTime(new SimpleDateFormat("yyyy-MM-dd HH:mm:ss").parse(endTime));
-        } catch (ParseException e) {
-            e.printStackTrace();
-        }
-        int day1 = c.get(Calendar.DATE);
-        int HOUR=c.get(Calendar.HOUR);
-        c.set(Calendar.DATE, day1 - 1);
-        c.set(Calendar.HOUR, HOUR - 1);
 
-        String dayAfter = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss").format(c.getTime());
-        System.out.println(dayAfter);
-        logger.info(" 时间       "+dayAfter);
-
-        if(cxisopen){
-            //在线程中执行
-            new Thread(new Runnable() {
-                @Override
-                public void run() {
-                    CanService.upload_MingShengOrder_byPage(dayAfter,
-                            endTime,"1",amount,
-                            appid,appscret,
-                            supplierid,url);
-                }
-            }).start();
-        }
+//        String endTime=String_Tool.DataBaseTime();
+//        Calendar c = Calendar.getInstance();
+//        c.setTime(new Date());
+//        try {
+//            c.setTime(new SimpleDateFormat("yyyy-MM-dd HH:mm:ss").parse(endTime));
+//        } catch (ParseException e) {
+//            e.printStackTrace();
+//        }
+//        int day1 = c.get(Calendar.DATE);
+//        int HOUR=c.get(Calendar.HOUR);
+//        c.set(Calendar.DATE, day1 - 1);
+//        c.set(Calendar.HOUR, HOUR - 1);
+//
+//        String dayAfter = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss").format(c.getTime());
+//        System.out.println(dayAfter);
+//        logger.info(" 时间       "+dayAfter);
+//
+//        if(cxisopen){
+//            //在线程中执行
+//            new Thread(new Runnable() {
+//                @Override
+//                public void run() {
+//                    CanService.upload_MingShengOrder_byPage(dayAfter,
+//                            endTime,"1",amount,
+//                            appid,appscret,
+//                            supplierid,url);
+//                }
+//            }).start();
+//        }
     }
-    //每天凌晨执行
+    //每天凌晨执行  这个方法是写给第三方支付接口的
     @Scheduled(cron = "0 0 0 1/1 * ? ")
     public void updateLeftNumerUser(){
-        new Thread(new Runnable() {
-            @Override
-            public void run() {
-                try{
-                    SCanDao.update_leftNumber();
-                    logger.info("修改访问次数成功");
-                }catch (Exception e){
-                    logger.error("修改访问次数失败");
-                }
-            }
-        }).start();
+//        new Thread(new Runnable() {
+//            @Override
+//            public void run() {
+//                try{
+//                    SCanDao.update_leftNumber();
+//                    logger.info("修改访问次数成功");
+//                }catch (Exception e){
+//                    logger.error("修改访问次数失败");
+//                }
+//            }
+//        }).start();
     }
-    //每两个小时执行一次 @Scheduled(cron = "0 0 2/2 * * ? ") 服务启动后两个小时后开始执行定时器  这个cron可以在线生成   也可自行研究
-    //这里只是测试用里 0 0 3 1/1 * ?
-    //0 0 11 * * ? *
+
+    //这个方法也是写给民生银行的  这个类写的有点乱  自己看吧  这个工程用于几个项目的
     @Scheduled(cron = "0 0 3 * * ? ")//每天的凌晨3点执行  0 0 3 * * ?  前面没有空格   后面有空格
     public void uploadMingShengOrder(){
 
-        //获取开始的时间
-        t_MingShengTime t_mingShengTime=mingSheng.get_t_MingShengTime("");
-        logger.error("我是定时器  0 0 3 * * ?  的 哈哈  "
-                     +(new SimpleDateFormat("yyyy-MM-dd HH:mm:ss").format(new Date()))+"  "+t_mingShengTime.toString());
-        String endTime=String_Tool.DataBaseTime();
-        if(isopen){
-            //在线程中执行
-            new Thread(new Runnable() {
-                @Override
-                public void run() {
-                    CanService.upload_MingShengOrder_byPage(t_mingShengTime.getEndTime(),
-                            endTime,"1",amount,
-                            appid,appscret,
-                            supplierid,url);
-                }
-            }).start();
-        }
+
+//        t_MingShengTime t_mingShengTime=mingSheng.get_t_MingShengTime("");
+//        logger.error("我是定时器  0 0 3 * * ?  的 哈哈  "
+//                     +(new SimpleDateFormat("yyyy-MM-dd HH:mm:ss").format(new Date()))+"  "+t_mingShengTime.toString());
+//        String endTime=String_Tool.DataBaseTime();
+//        if(isopen){
+//            new Thread(new Runnable() {
+//                @Override
+//                public void run() {
+//                    CanService.upload_MingShengOrder_byPage(t_mingShengTime.getEndTime(),
+//                            endTime,"1",amount,
+//                            appid,appscret,
+//                            supplierid,url);
+//                }
+//            }).start();
+//        }
 
 
     }

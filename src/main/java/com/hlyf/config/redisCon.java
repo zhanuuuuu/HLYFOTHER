@@ -21,6 +21,13 @@ public class redisCon {
     @Value("${cluster.isdandian}")
     private Boolean isdandian;
 
+    @Value("${cluster.appid}")
+    private String appid;
+
+    @Value("${cluster.mdkey}")
+    private String mdkey;
+
+
     public Boolean getIsdandian() {
         return isdandian;
     }
