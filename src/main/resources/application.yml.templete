@@ -21,6 +21,8 @@ cluster:
   isredistime: 7200                   #有效时间  单位s秒
   encrypt: true                      #是否启动加密   默认是
   isdandian: false                    #是否是单店 true 单店 false 连锁
+  appid: 2019091011070800
+  mdkey: A472593AC159381EAC1A9B7E3CB53B27
   datasource:
     driver-class-name: com.microsoft.sqlserver.jdbc.SQLServerDriver
     url: jdbc:sqlserver://;databaseName=Posmanagement_main
