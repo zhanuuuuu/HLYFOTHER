@@ -8,7 +8,7 @@ public enum ResultOk {
     SUCCESS("1001","正确"),
     SUCCESS_NULL("1002","数据集为空"),
     ERROR_UNKNOWN("1003","系统繁忙，请稍后再试...."),
-    DATA_PASR_ERROR("1004","数据格式不正确"),
+    DATA_PASR_ERROR("1004","上传数据格式不正确"),
     USER_NOT_EXIT("1005","该用户不存在"),
     ERROR_SECRET("1006","签名失败"),
     ORDERNO_EXIST("1007","单号重复"),

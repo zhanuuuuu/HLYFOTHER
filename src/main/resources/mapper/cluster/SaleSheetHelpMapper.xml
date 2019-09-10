@@ -35,6 +35,31 @@
     where cSaleSheetno = #{cSaleSheetno,jdbcType=VARCHAR}
   </delete>
 
+  <insert id="insertList" >
+    INSERT INTO  t_SaleSheetHelp (dSaleDate, cSaleSheetno, iSeed,
+    cStoreNo, cGoodsNo, cOperatorno,
+    cOperatorName, bAuditing, fVipScore,
+    fPrice, fVipPrice, fQuantity,
+    fLastSettle, cSaleTime, cVipNo,
+    cWHno, cSheetNo
+    )
+    VALUES
+    <foreach collection ="list" item="item" separator =",">
+      (#{item.dSaleDate,jdbcType=VARCHAR}, #{item.cSaleSheetno,jdbcType=VARCHAR}, #{item.iSeed,jdbcType=INTEGER},
+      #{item.cStoreNo,jdbcType=VARCHAR}, #{item.cGoodsNo,jdbcType=VARCHAR}, #{item.cOperatorno,jdbcType=VARCHAR},
+      #{item.cOperatorName,jdbcType=VARCHAR}, #{item.bAuditing,jdbcType=BIT}, #{item.fVipScore,jdbcType=DECIMAL},
+      #{item.fPrice,jdbcType=DECIMAL}, #{item.fVipPrice,jdbcType=DECIMAL}, #{item.fQuantity,jdbcType=DECIMAL},
+      #{item.fLastSettle,jdbcType=DECIMAL}, #{item.cSaleTime,jdbcType=VARCHAR}, #{item.cVipNo,jdbcType=VARCHAR},
+      #{item.cWHno,jdbcType=VARCHAR}, #{item.cSheetNo,jdbcType=VARCHAR}
+      )
+    </foreach >
+  </insert>
+  <!--(#{dSaleDate}, #{cSaleSheetno}, #{iSeed},-->
+  <!--#{cStoreNo}, #{cGoodsNo}, #{cOperatorno},-->
+  <!--#{cOperatorName}, #{bAuditing}, #{fVipScore},-->
+  <!--#{fPrice}, #{fVipPrice}, #{fQuantity},-->
+  <!--#{fLastSettle}, #{cSaleTime}, #{cVipNo},-->
+  <!--#{cWHno}, #{cSheetNo})-->
   <insert id="insert" parameterType="com.hlyf.domin.Qx.SaleSheetHelp">
     insert into t_SaleSheetHelp (dSaleDate, cSaleSheetno, iSeed, 
       cStoreNo, cGoodsNo, cOperatorno, 
@@ -43,7 +68,7 @@
       fLastSettle, cSaleTime, cVipNo, 
       cWHno, cSheetNo
       )
-    values (#{dSaleDate,jdbcType=TIMESTAMP}, #{cSaleSheetno,jdbcType=VARCHAR}, #{iSeed,jdbcType=INTEGER}, 
+    values (#{dSaleDate,jdbcType=VARCHAR}, #{cSaleSheetno,jdbcType=VARCHAR}, #{iSeed,jdbcType=INTEGER},
       #{cStoreNo,jdbcType=VARCHAR}, #{cGoodsNo,jdbcType=VARCHAR}, #{cOperatorno,jdbcType=VARCHAR}, 
       #{cOperatorName,jdbcType=VARCHAR}, #{bAuditing,jdbcType=BIT}, #{fVipScore,jdbcType=DECIMAL}, 
       #{fPrice,jdbcType=DECIMAL}, #{fVipPrice,jdbcType=DECIMAL}, #{fQuantity,jdbcType=DECIMAL}, 

@@ -17,6 +17,8 @@ import org.springframework.test.context.junit4.SpringRunner;
 
 import java.util.List;
 
+import static com.hlyf.tool.Md5.MD5Encode;
+
 /**
  * Created by Administrator on 2019-09-09.
  */
@@ -44,10 +46,10 @@ public class QxDaoMapperTest {
             "\t\t\t\"fQuantity\": 1,\n" +
             "\t\t\t\"fVipPrice\": 1,\n" +
             "\t\t\t\"fVipScore\": 1,\n" +
-            "\t\t\t\"iSeed\": 1\n" +
+            "\t\t\t\"iSeed\": 7\n" +
             "\t\t},\n" +
             "\t\t{\n" +
-            "\t\t\t\"bAuditing\": false,\n" +
+            "\t\t\t\"bAuditing\": true,\n" +
             "\t\t\t\"cGoodsNo\": \"10001010\",\n" +
             "\t\t\t\"cOperatorName\": \"无名氏\",\n" +
             "\t\t\t\"cOperatorno\": \"01\",\n" +
@@ -63,12 +65,43 @@ public class QxDaoMapperTest {
             "\t\t\t\"fQuantity\": 1,\n" +
             "\t\t\t\"fVipPrice\": 1,\n" +
             "\t\t\t\"fVipScore\": 1,\n" +
-            "\t\t\t\"iSeed\": 2\n" +
+            "\t\t\t\"iSeed\": 6\n" +
             "\t\t}\n" +
             "\t]\n" +
             "}";
+
+    private static final String appkey="warelucent";
+
     @Autowired
     private QxDao qxDaoMapper;
+
+    //保存单号
+    @Test
+    public void testInsertList(){
+        JSONObject jsonObject= JSON.parseObject(jsonString);
+        JSONArray jsonArray=jsonObject.getJSONArray("dataDetail");
+        log.info("我是jsonArray {}" ,jsonArray.toJSONString());
+        List<SaleSheetHelp> saleSheetHelps=JSONObject.parseArray(jsonArray.toJSONString(), SaleSheetHelp.class);
+        for(SaleSheetHelp t:saleSheetHelps){
+            log.info("我是 SaleSheetHelp {}" ,JSON.toJSONString(t));
+        }
+        int i=qxDaoMapper.insertList(saleSheetHelps);
+        log.info("我是影响行数 {} ",i);
+
+
+    }
+
+    //得到加密的key  这里是单独的签名
+    @Test
+    public void getKey(){
+
+        System.out.println(MD5Encode(appkey+"2019091011070800","UTF-8"));
+
+        log.info("我是数据 {} ",MD5Encode(appkey+"2019091011070800","UTF-8").toUpperCase());
+
+    }
+
+
     //保存单号
     @Test
     public void testInsert(){
@@ -78,7 +111,7 @@ public class QxDaoMapperTest {
 //                Double fPrice, Double fVipPrice,
 //                Double fQuantity, Double fLastSettle, String cSaleTime, String cVipNo, String cWHno, String cSheetNo)
 
-        SaleSheetHelp saleSheetHelp=new   SaleSheetHelp("2019-09-09", "0001", 2,"000",
+        SaleSheetHelp saleSheetHelp=new   SaleSheetHelp("2019-09-09", "0001", 5,"000",
                 "10001010", "01",
                 "无名氏", false, 1.0,
                 1.0, 1.0,
@@ -108,6 +141,7 @@ public class QxDaoMapperTest {
     @Test
     public void testJson(){
 
+        log.info("我是 jsonString {}" ,jsonString);
         JSONObject jsonObject= JSON.parseObject(jsonString);
         JSONArray jsonArray=jsonObject.getJSONArray("dataDetail");
         log.info("我是jsonArray {}" ,jsonArray.toJSONString());

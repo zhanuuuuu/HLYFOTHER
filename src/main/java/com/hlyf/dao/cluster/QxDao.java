@@ -19,6 +19,8 @@ public interface QxDao {
 
     int insert(SaleSheetHelp record);
 
+    Integer insertList(List<SaleSheetHelp> list);
+
     SaleSheetHelp selectByPrimaryKey( @Param("cSaleSheetno") String cSaleSheetno);
 
     List<SaleSheetHelp> selectAll();

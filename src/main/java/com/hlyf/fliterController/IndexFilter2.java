@@ -80,35 +80,35 @@ public class IndexFilter2 implements Filter {
                     "multifileUpload","request","wechat"};//,"/api/getToken"
 
             //记录访问
-            tThirdUsers user = getUser(tocken);
-            try {
-                SCanDao.insert_tThirdUsers_Log(user.getAppId(), user.getUserName(), userIp, data);
-            } catch (Exception e1) {
-                logger.error("保存访问记录出错 在线程中  " + e1.getMessage());
-            }
-
-//            for (String path : paths) {
-//                if (!uri.contains(path)) {
-//                    tThirdUsers user = getUser(tocken);
-//                        /*在子线程中做日志处理*/
-//                    try {
-//                        SCanDao.insert_tThirdUsers_Log(user.getAppId(), user.getUserName(), userIp, data);
-//                    } catch (Exception e1) {
-//                        logger.error("保存访问记录出错 在线程中  " + e1.getMessage());
-//                    }
-////                new Thread(new Runnable() {
-////                    @Override
-////                    public void run() {
-////                        try{
-////                            SCanDao.insert_tThirdUsers_Log(user.getAppId(),user.getUserName(),userIp,data);
-////                        }catch (Exception e1){
-////                            logger.error("保存访问记录出错 在线程中  "+e1.getMessage());
-////                        }
-////                    }
-////                }).start();
-//
-//                }
+//            tThirdUsers user = getUser(tocken);
+//            try {
+//                SCanDao.insert_tThirdUsers_Log(user.getAppId(), user.getUserName(), userIp, data);
+//            } catch (Exception e1) {
+//                logger.error("保存访问记录出错 在线程中  " + e1.getMessage());
 //            }
+
+            for (String path : paths) {
+                if (!uri.contains(path)) {
+                    tThirdUsers user = getUser(tocken);
+                        /*在子线程中做日志处理*/
+                    try {
+                        SCanDao.insert_tThirdUsers_Log(user.getAppId(), user.getUserName(), userIp, data);
+                    } catch (Exception e1) {
+                        logger.error("保存访问记录出错 在线程中  " + e1.getMessage());
+                    }
+//                new Thread(new Runnable() {
+//                    @Override
+//                    public void run() {
+//                        try{
+//                            SCanDao.insert_tThirdUsers_Log(user.getAppId(),user.getUserName(),userIp,data);
+//                        }catch (Exception e1){
+//                            logger.error("保存访问记录出错 在线程中  "+e1.getMessage());
+//                        }
+//                    }
+//                }).start();
+
+                }
+            }
 
         }
 
