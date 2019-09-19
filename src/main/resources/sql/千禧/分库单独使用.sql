@@ -1,4 +1,4 @@
-
+USE [PosStationHelp]
 GO
 
 /****** Object:  Table [dbo].[t_SaleSheetHelp]

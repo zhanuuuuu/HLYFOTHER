@@ -1,0 +1,27 @@
+{
+	"data": [{
+		"fQuantity": "1",
+		"fLastSettle0": "0.3000",
+		"cBarCode": "6958279812036",
+		"fVipPrice": "0.3000",
+		"bWeight": null,
+		"fPrice": "0.3000",
+		"fNormalSettle": "0.3000",
+		"cGoodsName": "印字中袋",
+		"cWHno": "1010",
+		"cGoodsNo": "05000002",
+		"fLastSettle": "0.3000"
+	}, {
+		"fQuantity": "5",
+		"fLastSettle0": "10",
+		"cBarCode": "6958031500034",
+		"fVipPrice": "2",
+		"bWeight": null,
+		"fPrice": "3",
+		"fNormalSettle": "15",
+		"cGoodsName": "香其酱Z100g",
+		"cWHno": "1010",
+		"cGoodsNo": "03001231",
+		"fLastSettle": "10"
+	}]
+}

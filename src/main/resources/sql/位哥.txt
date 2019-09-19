@@ -1,0 +1,21 @@
+SELECT TOP 10 dSaleDate as 销售日期,cSaleSheetno as 销售单号,iSeed  as 序号,cGoodsNo 商品店内吗,
+  cGoodsName ,cBarCode,cOperatorno,cOperatorName,
+  fVipScore,fPrice as 售价,fNormalSettle 正常售价,fVipPrice 售价,fQuantity 数量,fLastSettle0 金额,fLastSettle 金额,
+  cSaleTime 销售时间,tag_daily  as 默认值,
+  cWHno as 仓库号,cStoreNo 门店编号,bAuditing as 正特价类型
+  from t_SaleSheetDetail
+
+  select TOP 10 zdriqi as 销售日期,sheetno as 销售单号,jstype as 支付方式,mianzhi as 面值,zhekou as 折扣,zhaoling as 找零,
+  shishou 实收,jstime as 交易日期,
+ shouyinyuanno as '收银员No',shouyinyuanmc'收银员名称',orientmoney as 默认值,leftmoney as 默认值,
+  storevalue as 默认值,detail as 支付方式,bPost as 默认值,tag_daily as 默认值,cWhNo as 仓库号,
+  cStoreNo 门店编号 from jiesuan
+  where detail NOT like '储值卡%'
+
+  --结算方式表
+  select * FROM Posmanagement_main.dbo.t_jiesuan_def
+  --仓库表
+  select *from  Posmanagement_main.dbo.t_WareHouse
+
+  SELECT cWhNo,cWh,cStoreNo FROM t_WareHouse
+  WHERE 1=1

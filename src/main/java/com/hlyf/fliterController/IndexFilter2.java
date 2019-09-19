@@ -45,10 +45,10 @@ public class IndexFilter2 implements Filter {
     public void doFilter(ServletRequest servletRequest, ServletResponse servletResponse, FilterChain filterChain) throws IOException, ServletException {
 
         //京东对接需要用这个方法 千禧基本信息也需要用这个方法的
-        //CommFilter((HttpServletRequest) servletRequest, (HttpServletResponse) servletResponse, filterChain, redison, SCanDao);
+        CommFilter((HttpServletRequest) servletRequest, (HttpServletResponse) servletResponse, filterChain, redison, SCanDao);
 
         //下面不拦截任何请求
-        filterChain.doFilter((HttpServletRequest) servletRequest, (HttpServletResponse) servletResponse);
+        //filterChain.doFilter((HttpServletRequest) servletRequest, (HttpServletResponse) servletResponse);
     }
 
     private static void CommFilter(HttpServletRequest servletRequest, HttpServletResponse servletResponse, FilterChain filterChain, redisCon redison, sCanDao SCanDao) throws IOException, ServletException {

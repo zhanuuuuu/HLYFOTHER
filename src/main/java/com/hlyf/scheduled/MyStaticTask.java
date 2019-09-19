@@ -91,35 +91,35 @@ public class MyStaticTask {
     @Scheduled(cron = "0 */10 *  * * * ")
     public void cxGetData(){
 
-//        String endTime=String_Tool.DataBaseTime();
-//        Calendar c = Calendar.getInstance();
-//        c.setTime(new Date());
-//        try {
-//            c.setTime(new SimpleDateFormat("yyyy-MM-dd HH:mm:ss").parse(endTime));
-//        } catch (ParseException e) {
-//            e.printStackTrace();
-//        }
-//        int day1 = c.get(Calendar.DATE);
-//        int HOUR=c.get(Calendar.HOUR);
-//        c.set(Calendar.DATE, day1 - 1);
-//        c.set(Calendar.HOUR, HOUR - 1);
-//
-//        String dayAfter = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss").format(c.getTime());
-//        System.out.println(dayAfter);
-//        logger.info(" 时间       "+dayAfter);
-//
-//        if(cxisopen){
-//            //在线程中执行
-//            new Thread(new Runnable() {
-//                @Override
-//                public void run() {
-//                    CanService.upload_MingShengOrder_byPage(dayAfter,
-//                            endTime,"1",amount,
-//                            appid,appscret,
-//                            supplierid,url);
-//                }
-//            }).start();
-//        }
+        String endTime=String_Tool.DataBaseTime();
+        Calendar c = Calendar.getInstance();
+        c.setTime(new Date());
+        try {
+            c.setTime(new SimpleDateFormat("yyyy-MM-dd HH:mm:ss").parse(endTime));
+        } catch (ParseException e) {
+            e.printStackTrace();
+        }
+        int day1 = c.get(Calendar.DATE);
+        int HOUR=c.get(Calendar.HOUR);
+        c.set(Calendar.DATE, day1 - 1);
+        c.set(Calendar.HOUR, HOUR - 1);
+
+        String dayAfter = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss").format(c.getTime());
+        System.out.println(dayAfter);
+        logger.info(" 时间       "+dayAfter);
+
+        if(cxisopen){
+            //在线程中执行
+            new Thread(new Runnable() {
+                @Override
+                public void run() {
+                    CanService.upload_MingShengOrder_byPage(dayAfter,
+                            endTime,"1",amount,
+                            appid,appscret,
+                            supplierid,url);
+                }
+            }).start();
+        }
     }
     //每天凌晨执行  这个方法是写给第三方支付接口的
     @Scheduled(cron = "0 0 0 1/1 * ? ")

@@ -43,9 +43,9 @@ public class IndexFilter implements Filter {
     @Override
     public void doFilter(ServletRequest servletRequest, ServletResponse servletResponse, FilterChain filterChain) throws IOException, ServletException {
         //京东对接需要用这个方法 千禧基本信息也需要用这个方法的
-        //CommFilter((HttpServletRequest) servletRequest, (HttpServletResponse) servletResponse, filterChain);
+        CommFilter((HttpServletRequest) servletRequest, (HttpServletResponse) servletResponse, filterChain);
         //下面这个方法是不拦截请求
-        filterChain.doFilter((HttpServletRequest) servletRequest, (HttpServletResponse) servletResponse);
+       // filterChain.doFilter((HttpServletRequest) servletRequest, (HttpServletResponse) servletResponse);
     }
 
     private void CommFilter(HttpServletRequest servletRequest, HttpServletResponse servletResponse, FilterChain filterChain) throws IOException, ServletException {
