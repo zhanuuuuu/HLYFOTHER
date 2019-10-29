@@ -145,7 +145,7 @@
 		<dependency>
 			<groupId>com.alibaba</groupId>
 			<artifactId>fastjson</artifactId>
-			<version>1.2.8</version>
+			<version>1.2.25</version>
 		</dependency>
 
 		<!-- 再在你的配置类开头加上@PropertySource("classpath:your.properties")，其余用法与加载yml的配置一样 -->
