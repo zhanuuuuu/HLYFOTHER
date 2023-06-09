@@ -21,8 +21,8 @@ cluster:
   isredistime: 7200                   #有效时间  单位s秒
   encrypt: true                      #是否启动加密   默认是
   isdandian: false                    #是否是单店 true 单店 false 连锁
-  appid: 2019091011070800
-  mdkey: A472593AC159381EAC1A9B7E3CB53B27
+  appid: 
+  mdkey: 
   datasource:
     driver-class-name: com.microsoft.sqlserver.jdbc.SQLServerDriver
     url: jdbc:sqlserver://:2468;databaseName=Posmanagement_main
@@ -89,11 +89,11 @@ info:
 
 #以下是民生电商的配置  正式的配置   接手人员暂时不用理会 只需要把下面的 isopen 和 cxisopen 的状态改成false 即可
 minsheng:
-  appid: 946
+  appid: 
   method: minshengec.supplier.order.get
-  supplierid: 946
-  appscret: C8C41C4A18675A74E01C8A20E8A0F662
-  url: http://api.minshengec.com/router
+  supplierid: 
+  appscret: 
+  url: 
   isopen: false
   cxisopen: false
   amount: 50    #每次拉去多少条
